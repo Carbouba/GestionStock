@@ -1,0 +1,59 @@
+📜 Projet : "Le Gestionnaire de Stock"
+Imagine que tu gères une petite boutique.
+Données : Chaque produit a un Nom (clé) et une Quantité (valeur).
+Exemple : "Pomme": 50, "Banane": 10
+Persistance : Les données sont stockées dans stock.txt (format nom:quantité).
+Le Menu :
+Voir le stock : Affiche tout (proprement).
+Ajouter un produit :
+Si le produit existe déjà, demande : "Il y en a déjà X. Combien voulez-vous en ajouter ?" (Et tu additionnes les quantités).
+Si c'est nouveau, tu crées l'entrée.
+Retirer du stock (Vente) :
+Demande le produit.
+Demande la quantité à retirer.
+⚠️ Sécurité : Tu ne peux pas retirer plus que ce qu'il y a en stock ! (Si j'ai 10 bananes, je ne peux pas en vendre 12). Si le stock tombe à 0, tu peux soit le laisser à 0, soit le supprimer (ton choix).
+Quitter (Sauvegarde automatique).
+
+
+
+📂 1. La Structure des Données
+En Mémoire (RAM) : Un Dictionnaire unique.
+Clé : Nom du produit (String). Ex: "Pomme"
+Valeur : Quantité en stock (Int). Ex: 50
+Sur le Disque (Persistance) : Un fichier nommé stock.txt.
+Format de ligne : Nom:Quantité
+Exemple : Pomme:50
+⚙️ 2. Les 4 Fonctionnalités Principales
+Ton menu doit proposer ces options :
+1️⃣ Voir le stock
+Affiche la liste de tous les produits et leur quantité.
+Contrainte : Si le stock est vide, affiche un message clair ("Le stock est vide").
+Bonus esthétique : Essaie d'aligner l'affichage (ex: Pomme : 50).
+2️⃣ Ajouter du stock (Approvisionnement)
+Demande le nom du produit.
+Demande la quantité à ajouter.
+Logique Intelligente :
+Si le produit n'existe pas : Tu le crées avec cette quantité.
+Si le produit existe déjà : Tu ADDITIONNES la nouvelle quantité à l'ancienne.
+(Ne remplace pas 10 pommes par 5 pommes ! Ça doit faire 15).
+3️⃣ Vendre un produit (Retrait)
+Demande le nom du produit.
+Sécurité 1 : Vérifie si le produit existe. Sinon, message d'erreur.
+Demande la quantité à vendre.
+Sécurité 2 (Mathématique) : Vérifie que tu as assez de stock !
+On ne peut pas vendre 10 bananes s'il n'en reste que 5.
+Si la vente est valide, tu SOUSTRAIS la quantité.
+4️⃣ Quitter (et Sauvegarder)
+Quand on quitte, le programme écrase le fichier stock.txt avec le contenu actuel du dictionnaire (Mode "w").
+Note : Tu peux aussi choisir de sauvegarder automatiquement après chaque ajout/vente (c'est plus sûr).
+🛡️ 3. Les Contraintes Techniques (Tes "Points Faibles" à surveiller)
+C'est là que je vais te juger ! 🧐
+Nettoyage (.strip()) :
+Si je tape " Pomme ", ça doit être enregistré comme "Pomme".
+Si je tape Entrée sans rien écrire, le programme doit me gronder et ne rien faire.
+Sécurité Numérique (try/except) :
+Si je tape "douze" au lieu de 12 pour la quantité, le programme ne doit pas planter.
+Une quantité ne peut pas être négative (on n'ajoute pas -5 pommes).
+Gestion du Fichier :
+Au démarrage, le programme doit charger le fichier existant.
+Si le fichier n'existe pas (premier lancement), le programme ne doit pas planter.
