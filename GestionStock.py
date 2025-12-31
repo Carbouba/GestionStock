@@ -12,7 +12,9 @@ def voir_stock():
 def ajout_stock():
     while True:
         try:
-            nom_prod = input("Entrez le nom du produit : ").strip().lower()
+            nom_prod = input("Entrez le nom du produit (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+            if nom_prod == "retour":
+                return
             if nom_prod == "":
                 print("❌ Erreur : Vous devez saisir un nom correct : ")
                 continue
