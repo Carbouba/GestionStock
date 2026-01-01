@@ -55,7 +55,7 @@ while True:
 
     try:
         option = int(input("Veuillez Choisir : "))
-        if 1 > option and 4 < option :
+        if 1 <= option <= 4 :
             break
         else:
             print("❌ Erreur : Le chiffre doit être entre (1 et 4)")    
@@ -63,13 +63,13 @@ while True:
         print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
         continue
 
-    match option:
-        case 1:
-            voir_stock()
-        case 2:
-            ajout_stock()
-        case 3:
-            vendre_produit()
-        case 4:
-            print("Au revoir !")
-            break
+match option:
+    case 1:
+        voir_stock()
+    case 2:
+        ajout_stock()
+    case 3:
+        vendre_produit()
+    case 4:
+        print("Au revoir !")
+        break
