@@ -20,27 +20,30 @@ def ajout_stock():
                 continue
             
             if nom_prod in stocks:
-                quantite = int(input("❌ Erreur : le produit existe deja, combien voulez-vous en ajouter ❓: "))
+                quantite = int(input(f"Il y en a deja {stocks[nom_prod]}, combien voulez-vous en ajouter : "))
                 while True:
-                    if 0 <= quantite:
-                        print("❌ Erreur : Entrez une valeur positive")
+                    if quantite <= 0:
+                        quantite = int(input("❌ Erreur : Entrez une valeur positive : "))
                     else:
                         stocks[nom_prod] += quantite
                         print("✅ Quantité ajouter !")
                         return
             else:
                 quantite = int(input("Entrez la quantité : "))
-                stocks[nom_prod.lower()] = quantite
-                print("✅ Le produit a ete ajouté ➕!")
-                return
+                while True:
+                    if quantite <= 0:
+                        quantite = int(input("❌ Erreur : Entrez une valeur positive : "))
+                    else:
+                        stocks[nom_prod.lower()] = quantite
+                        print("✅ Le produit a ete ajouté ➕!")
+                        return
         except ValueError:
             print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
-
-
-    
 def vendre_produit():
-    prod_vent = input("Entrez le nom du produit a vendre : ").strip()
+    
+
     return
+    
 
 stocks = {}
 
@@ -55,21 +58,19 @@ while True:
 
     try:
         option = int(input("Veuillez Choisir : "))
-        if 1 <= option <= 4 :
-            break
-        else:
+        if not (1 <= option <= 4) :
             print("❌ Erreur : Le chiffre doit être entre (1 et 4)")    
     except ValueError:
         print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
         continue
 
-match option:
-    case 1:
-        voir_stock()
-    case 2:
-        ajout_stock()
-    case 3:
-        vendre_produit()
-    case 4:
-        print("Au revoir !")
-        break
+    match option:
+        case 1:
+            voir_stock()
+        case 2:
+            ajout_stock()
+        case 3:
+            vendre_produit()
+        case 4:
+            print("Au revoir !")
+            break
