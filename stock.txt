@@ -1,5 +1,4 @@
-courge : 100
-pasteque : 100
-ananas : 100
-pomme : 5
-reou : 3
+pomme : 4
+pate : 4
+riz : 4
+tomate : 3

@@ -70,8 +70,6 @@ def ajout_stock():
             continue
     
         sauv_stock()
-
-
 def vendre_produit():
     total_stock = len(stocks)
     if total_stock == 0:
@@ -102,13 +100,35 @@ def vendre_produit():
                             print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock épuisée.\n")
                         else:
                             print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock restant : {stocks[prod_vend]}\n")    
+                        sauv_stock()
                     return
                 except ValueError:
                     print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
                     continue
-    sauv_stock()
                 
-    
+def supprimer_stock():
+    total_stock = len(stocks)
+    if total_stock == 0:
+        print( "\nAucun produit à supprimer pour le moment !\n")
+    else:
+        #print("\n===== produits en stock =====")
+        print("-------------------------------")
+        print(f"Produits\t|\tStocks")
+        print("-------------------------------")
+        for stck, qnte in stocks.items():
+            print(f"{stck.capitalize():<15} : {qnte:>5}")
+        while True:
+            prod_supp = input("\nQuel produit souhaitez vous supprimer (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+            if prod_supp == "retour":
+                return
+            if prod_supp not in stocks:
+                print("\n❌ Erreur : ce produit n'existe pas !")
+                continue
+            else:
+                stocks.pop(prod_supp, None)
+                print(f"Le produit {prod_supp} a ete supprimer 🗑️\n")
+                sauv_stock()
+        
     
 stocks = {}
 
@@ -121,12 +141,13 @@ while True:
     print("1. Voir le stock")
     print("2. Ajouter du stock")
     print("3. Vendre un produit")
-    print("4. Quitter")
+    print("4. Supprimer un produit")
+    print("5. Quitter")
     print("====================")
 
     try:
         option = int(input("Veuillez Choisir : "))
-        if not (1 <= option <= 4) :
+        if not (1 <= option <= 5) :
             print("❌ Erreur : Le chiffre doit être entre (1 et 4)")    
     except ValueError:
         print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
@@ -140,5 +161,7 @@ while True:
         case 3:
             vendre_produit()
         case 4:
+            supprimer_stock()
+        case 5:
             sauv_stock()
             break
