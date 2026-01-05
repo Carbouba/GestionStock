@@ -1,22 +1,17 @@
-# Appllication de gestion de stock #
-
-
-
-def sauv_stock():
-    with open("stock.txt", "w", encoding="utf-8") as f:    
-            for pro, qnt in stocks.items():
-                f.write(f"{pro} : {qnt}\n")
+def sauv_stock(produit, quantite):
+    with open("stock.txt", "w", encoding="utf-8") as f:
+            f.write(f"{produit} : {quantite}\n")
 
 def charg_stock():
     try:
         with open ("stock.txt", "r", encoding="utf-8") as f:
-            for stock_ligne in f:
-                stock_prop = stock_ligne.strip()
-                stock = stock_prop.split(":")
+            for ligne in f:
+                ligne_prop = ligne.strip()
+                stock = ligne_prop.split(":")
                 if len(stock) == 2:
-                    produit = stock[0].strip()
-                    quantite = stock[1].strip()
-                    stocks[produit] = int(quantite)
+                    prod = stock[0]
+                    qunt = stock[1]
+            stocks[prod] = qunt
     except FileNotFoundError:
         return 0
         
@@ -33,11 +28,12 @@ def voir_stock():
         for stck, qnte in stocks.items():
             print(f"{stck.capitalize():<15} : {qnte:>5}")
         #print("_________________________________")
+    
     return
 def ajout_stock():
     while True:
         try:
-            nom_prod = input("\nEntrez le nom du produit (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+            nom_prod = input("Entrez le nom du produit (ou 'retour' pour revenir au menu principal) : ").strip().lower()
             if nom_prod == "retour":
                 return
             if nom_prod == "":
@@ -67,9 +63,9 @@ def ajout_stock():
                             
         except ValueError:
             print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
-            continue
     
-        #sauv_stock()
+        sauv_stock(nom_prod, quantite)
+        return
 
 
 def vendre_produit():
@@ -102,14 +98,13 @@ def vendre_produit():
                             print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock épuisée.\n")
                         else:
                             print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock restant : {stocks[prod_vend]}\n")
-                    #sauv_stock(prod_vend, qunt_vend)    
+                    sauv_stock(prod_vend, qunt_vend)    
                     return
                 except ValueError:
                     print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
                     continue
     
 stocks = {}
-
 
 # Programme principale
 charg_stock()
@@ -138,5 +133,5 @@ while True:
         case 3:
             vendre_produit()
         case 4:
-            sauv_stock()
+            print("Au revoir !")
             break

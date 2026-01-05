@@ -1,1 +1,6 @@
-pomme : 3
+orange : 100
+courge : 100
+pasteque : 100
+ananas : 100
+pomme : 2
+reou : 3
