@@ -69,7 +69,7 @@ def ajout_stock():
             print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
             continue
     
-        #sauv_stock()
+        sauv_stock()
 
 
 def vendre_produit():
@@ -101,12 +101,14 @@ def vendre_produit():
                             stocks.pop(prod_vend, None)
                             print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock épuisée.\n")
                         else:
-                            print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock restant : {stocks[prod_vend]}\n")
-                    #sauv_stock(prod_vend, qunt_vend)    
+                            print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock restant : {stocks[prod_vend]}\n")    
                     return
                 except ValueError:
                     print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
                     continue
+    sauv_stock()
+                
+    
     
 stocks = {}
 
