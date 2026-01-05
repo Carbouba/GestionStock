@@ -1,4 +1,2 @@
-pomme : 4
 pate : 4
-riz : 4
 tomate : 3

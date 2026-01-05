@@ -66,7 +66,7 @@ def ajout_stock():
                         break
                             
         except ValueError:
-            print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
+            print("\n❌ Erreur : Vous avez entré une LETTRE, veuillez entrer un CHIFFRE.")
             continue
     
         sauv_stock()
@@ -103,7 +103,7 @@ def vendre_produit():
                         sauv_stock()
                     return
                 except ValueError:
-                    print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
+                    print("\n❌ EErreur : Vous avez entré une LETTRE, veuillez entrer un CHIFFRE.")
                     continue
                 
 def supprimer_stock():
@@ -125,9 +125,19 @@ def supprimer_stock():
                 print("\n❌ Erreur : ce produit n'existe pas !")
                 continue
             else:
-                stocks.pop(prod_supp, None)
-                print(f"Le produit {prod_supp} a ete supprimer 🗑️\n")
-                sauv_stock()
+                while True:
+                    confirmation = input(f"\nÊtes-vous sûr de vouloir supprimer le produit '{prod_supp}' ? (oui/non) : ").strip().lower()
+                    if confirmation != "oui" and confirmation != "non":
+                        print("\n❌ Erreur : Veuillez répondre par 'oui' ou 'non'.")
+                        continue
+                    if confirmation == "non":
+                        print("\nSuppression annulée.\n")
+                        return
+                    else:
+                        stocks.pop(prod_supp, None)
+                        print(f"Le produit {prod_supp} a ete supprimer 🗑️\n")
+                        sauv_stock()
+                        return
         
     
 stocks = {}
@@ -150,7 +160,7 @@ while True:
         if not (1 <= option <= 5) :
             print("❌ Erreur : Le chiffre doit être entre (1 et 4)")    
     except ValueError:
-        print("\n❌ Erreur : Vous devez entré un  CHIFFRE, pas une lettre.")
+        print("\n❌ Erreur : Vous avez entré une LETTRE, veuillez entrer un CHIFFRE.")
         continue
 
     match option:
