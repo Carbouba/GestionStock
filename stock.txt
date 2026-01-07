@@ -1,2 +1,3 @@
-pate : 4
-tomate : 3
+orange : 5
+mangue : 5
+pomme : 3
