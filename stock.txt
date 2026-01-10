@@ -1,1 +1,4 @@
+orange : 30 : fruit
 pomme : 3 : fruit
+savon : 2 : hygienne
+pommade : 3 : cosmetique

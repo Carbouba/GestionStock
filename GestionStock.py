@@ -5,7 +5,7 @@ def sauv_stock():
             for nom, infos in stocks.items():
                 quantite = infos["qte"]
                 categorie = infos["cat"]
-                f.write(f"{nom} : {quantite} : {categorie}\n")
+                f.write(f"{nom} : {int(quantite)} : {categorie}\n")
 
 def charg_stock():
     try:
@@ -17,7 +17,7 @@ def charg_stock():
                     produit = stock[0].strip()
                     quantite = stock[1].strip()
                     categorie = stock[2].strip()
-                    #stocks[produit] = int(quantite)
+                    stocks[produit] = {"qte" : int(quantite), "cat" : categorie}
     except FileNotFoundError:
         return 0
         
@@ -28,13 +28,37 @@ def voir_stock():
     else:
         print("\n===== Liste des produits en stock =====\n")
         print("-------------------------------")
-        print(f"Produits\t|\tStocks\t|\tCatégorie")
+        print(f"{'Produits':<10} | {'Stock':>5} | {'Catégorie':>10}")
         print("-------------------------------")
         for nom, infos in stocks.items():
             quantite = infos["qte"]
             categorie = infos["cat"]
-            print(f"{nom.capitalize():<10} : {quantite:>3} : {categorie.capitalize():>3}")
+            print(f"{nom.capitalize():<10} : {quantite:>5}{categorie.capitalize():>10}")
         #print("_________________________________")
+    return
+
+def recherche_stock():
+    total_stock = len(stocks)
+    if total_stock == 0:
+        print(f"Aucun produit disponible pour le moment !")
+    else:
+        print("\n===== Rechercher de produit =====\n")
+        while True:
+            prod_recherche = input("Entrez le nom du produit a rehchercher (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+            if prod_recherche == "retour":
+                return
+            if prod_recherche == "":
+                print("\n❌ Erreur : Vous devez saisir un nom correct : ")
+                continue
+            if prod_recherche not in stocks:
+                print("Erreur : ce produit n'existe pas.")
+                continue
+            print("Resultat de la recherche : ")
+            for nom, infos in stocks.items():
+                quantite = infos["qte"]
+                categorie = infos["cat"]
+                print(f"{nom.capitalize():<10} : {quantite:>5} {categorie.capitalize():>10}")
+            #print("_________________________________")
     return
 
 def ajout_stock():
@@ -48,13 +72,13 @@ def ajout_stock():
                 continue
             
             if nom_prod in stocks:
-                quantite = int(input(f"\nIl y en a deja {stocks[nom_prod]}, combien voulez-vous en ajouter : "))
+                quantite = int(input(f"\nIl y en a deja {stocks[nom_prod]["qte"]}, combien voulez-vous en ajouter : "))
                 while True:
                     if quantite <= 0:
                         quantite = int(input("\n❌ Erreur : Entrez une valeur positive : "))
                     else:
-                        categorie = input("Entrez la catégorie du produit : ")
-                        stocks[nom_prod] = {"qte" : quantite, "cat" : categorie}
+                        #categorie = input("Entrez la catégorie du produit : ")
+                        stocks[nom_prod]["qte"] += quantite
                         print("\n✅ Quantité ajouter !")
                         #sauv_stock(nom_prod, quantite)
                         break
@@ -65,7 +89,7 @@ def ajout_stock():
                         quantite = int(input("\n❌ Erreur : Entrez une valeur positive : "))
                     else:
                         categorie = input("Entrez la catégorie du produit : ")
-                        stocks[nom_prod] = {"qte" : quantite, "cat" : categorie}
+                        stocks[nom_prod] = {"qte" : int(quantite), "cat" : categorie}
                         print(f"{nom_prod} : {quantite}")
                         print("\n✅ Le produit a ete ajouté ➕!")
                        #sauv_stock(nom_prod, quantite)
@@ -87,7 +111,7 @@ def modifier_prod():
                     print("Erreur : ce produit n'existe pas.")
                     continue
                 else:
-                    print(f"Modification de '{prod_modif}' (stock actuel : {stocks[prod_modif]}")
+                    print(f"Modification de '{prod_modif}' (stock actuel : {stocks[prod_modif]["qte"]}")
                     print("1. Rennomer")
                     print("2. Corriger la quantité")
                     while True:
@@ -108,16 +132,16 @@ def modifier_prod():
                                     return
                             else:
                                 while True:
-                                    qunt_modif = int(input("Entrez la nouvelle quantité : "))
-                                    if qunt_modif <= 0:
+                                    nouveau_quant = int(input("Entrez la nouvelle quantité : "))
+                                    if nouveau_quant <= 0:
                                         print("❌ Erreur : Entrez une valeur positive : ")
                                         continue
                                     else:
-                                        qunt_actu = stocks[prod_modif]
-                                        if qunt_modif == qunt_actu:
+                                        qunt_actu = stocks[prod_modif]["qte"]
+                                        if nouveau_quant == qunt_actu:
                                             print("❌ Erreur : la valeur existe déjâ.")
                                             continue
-                                        stocks[prod_modif] = qunt_modif
+                                        stocks[prod_modif]["qte"] = nouveau_quant
                                         print("\n✅ Quantité corrigé !")
                                         sauv_stock()
                                         return
@@ -136,13 +160,16 @@ def vendre_produit():
         while True:
             try:
                     qunt_vend = int(input("\nCombien voulez vous vendre : "))
-                    stock_dispo = stocks[prod_vend]
+                    if qunt_vend <= 0:
+                        print("❌ Erreur : Entrez une valeur positive : ")
+                        continue
+                    stock_dispo = stocks[prod_vend]["qte"]
                     if qunt_vend > stock_dispo:
                         print("\n❌ Erreur : vous avez depassez la quantité disponible en stock !")
                         continue
                     else:
-                        stocks[prod_vend] -= qunt_vend
-                        if stocks[prod_vend] <= 0:
+                        stocks[prod_vend]["qte"] -= qunt_vend
+                        if stocks[prod_vend]["qte"] <= 0:
                             stocks.pop(prod_vend, None)
                             print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock épuisée.\n")
                         else:
@@ -185,17 +212,19 @@ charg_stock()
 while True:
     print("\n\n====== MENU GESTION STOCK ======")
     print("1. Voir le stock")
-    print("2. Ajouter du stock")
-    print("3. Vendre un produit")
-    print("4. Supprimer un produit")
-    print("5. Modifier un produit")
-    print("6. Quitter")
+    print("2. Rechercher un produit")
+    print("3. Ajouter du stock")
+    print("4. Vendre un produit")
+    print("5. Supprimer un produit")
+    print("6. Modifier un produit")
+    print("7. Quitter")
     print("====================")
 
     try:
         option = int(input("Veuillez Choisir : "))
-        if not (1 <= option <= 6) :
-            print("❌ Erreur : Le chiffre doit être entre (1 et 6)")    
+        if not (1 <= option <= 7) :
+            print("❌ Erreur : Le chiffre doit être entre (1 et 6)") 
+            continue   
     except ValueError:
         print("\n❌ Erreur : Vous avez entré une LETTRE, veuillez entrer un CHIFFRE.")
         continue
@@ -204,13 +233,15 @@ while True:
         case 1:
             voir_stock()
         case 2:
-            ajout_stock()
+            recherche_stock()
         case 3:
-            vendre_produit()
+            ajout_stock()
         case 4:
-            supprimer_stock()
+            vendre_produit()
         case 5:
-            modifier_prod()
+            supprimer_stock()
         case 6:
+            modifier_prod()
+        case 7:
             sauv_stock()
             break
