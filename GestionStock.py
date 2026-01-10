@@ -2,8 +2,10 @@
 
 def sauv_stock():
     with open("stock.txt", "w", encoding="utf-8") as f:    
-            for pro, qnt in stocks.items():
-                f.write(f"{pro} : {qnt}\n")
+            for nom, infos in stocks.items():
+                quantite = infos["qte"]
+                categorie = infos["cat"]
+                f.write(f"{nom} : {quantite} : {categorie}\n")
 
 def charg_stock():
     try:
@@ -11,10 +13,11 @@ def charg_stock():
             for stock_ligne in f:
                 stock_prop = stock_ligne.strip()
                 stock = stock_prop.split(":")
-                if len(stock) == 2:
+                if len(stock) == 3:
                     produit = stock[0].strip()
                     quantite = stock[1].strip()
-                    stocks[produit] = int(quantite)
+                    categorie = stock[2].strip()
+                    #stocks[produit] = int(quantite)
     except FileNotFoundError:
         return 0
         
@@ -25,10 +28,12 @@ def voir_stock():
     else:
         print("\n===== Liste des produits en stock =====\n")
         print("-------------------------------")
-        print(f"Produits\t|\tStocks")
+        print(f"Produits\t|\tStocks\t|\tCatégorie")
         print("-------------------------------")
-        for stck, qnte in stocks.items():
-            print(f"{stck.capitalize():<15} : {qnte:>5}")
+        for nom, infos in stocks.items():
+            quantite = infos["qte"]
+            categorie = infos["cat"]
+            print(f"{nom.capitalize():<10} : {quantite:>3} : {categorie.capitalize():>3}")
         #print("_________________________________")
     return
 
@@ -48,7 +53,8 @@ def ajout_stock():
                     if quantite <= 0:
                         quantite = int(input("\n❌ Erreur : Entrez une valeur positive : "))
                     else:
-                        stocks[nom_prod] += quantite
+                        categorie = input("Entrez la catégorie du produit : ")
+                        stocks[nom_prod] = {"qte" : quantite, "cat" : categorie}
                         print("\n✅ Quantité ajouter !")
                         #sauv_stock(nom_prod, quantite)
                         break
@@ -58,7 +64,9 @@ def ajout_stock():
                     if quantite <= 0:
                         quantite = int(input("\n❌ Erreur : Entrez une valeur positive : "))
                     else:
-                        stocks[nom_prod] = quantite
+                        categorie = input("Entrez la catégorie du produit : ")
+                        stocks[nom_prod] = {"qte" : quantite, "cat" : categorie}
+                        print(f"{nom_prod} : {quantite}")
                         print("\n✅ Le produit a ete ajouté ➕!")
                        #sauv_stock(nom_prod, quantite)
                         break
