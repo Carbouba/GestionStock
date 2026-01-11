@@ -1,70 +1,54 @@
-# Appllication de gestion de stock #
+# Importation de données des differents fichiers
+from data import stocks, sauv_stock
 
-def sauv_stock():
-    with open("stock.txt", "w", encoding="utf-8") as f:    
-            for nom, infos in stocks.items():
-                quantite = infos["qte"]
-                categorie = infos["cat"]
-                f.write(f"{nom} : {int(quantite)} : {categorie}\n")
-
-def charg_stock():
-    try:
-        with open ("stock.txt", "r", encoding="utf-8") as f:
-            for stock_ligne in f:
-                stock_prop = stock_ligne.strip()
-                stock = stock_prop.split(":")
-                if len(stock) == 3:
-                    produit = stock[0].strip()
-                    quantite = stock[1].strip()
-                    categorie = stock[2].strip()
-                    stocks[produit] = {"qte" : int(quantite), "cat" : categorie}
-    except FileNotFoundError:
-        return 0
-        
+# Fonction pour afficher la liste des articles
 def voir_stock():
     total_stock = len(stocks)
     if total_stock == 0:
-        print(f"Aucun produit disponible pour le moment !")
+        print(f"Aucun article disponible pour le moment !")
     else:
-        print("\n===== Liste des produits en stock =====\n")
+        print("\n===== Liste des articles en stock =====\n")
         print("-------------------------------")
-        print(f"{'Produits':<10} | {'Stock':>5} | {'Catégorie':>10}")
+        print(f"{'article':<10} | {'Stock':>5} | {'Catégorie':>10}")
         print("-------------------------------")
-        for nom, infos in stocks.items():
+        for nom, infos in stocks.items(): # On parcour le dictionaire tout entier
             quantite = infos["qte"]
             categorie = infos["cat"]
-            print(f"{nom.capitalize():<10} : {quantite:>5}{categorie.capitalize():>10}")
+            print(f"{nom.capitalize():<13} {quantite:>3} {categorie.capitalize():>13}")
         #print("_________________________________")
     return
 
+# Fonction pour rechercher un article
 def recherche_stock():
     total_stock = len(stocks)
     if total_stock == 0:
-        print(f"Aucun produit disponible pour le moment !")
+        print(f"Aucun article disponible pour le moment !")
     else:
-        print("\n===== Rechercher de produit =====\n")
+        print("\n===== Rechercher un article =====\n")
         while True:
-            prod_recherche = input("Entrez le nom du produit a rehchercher (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+            prod_recherche = input("Entrez le nom de l'article a rehchercher (ou 'retour' pour revenir au menu principal) : ").strip().lower()
             if prod_recherche == "retour":
                 return
-            if prod_recherche == "":
+            if prod_recherche == "": # Si l'utilisateur ne tape rien et valide
                 print("\n❌ Erreur : Vous devez saisir un nom correct : ")
                 continue
             if prod_recherche not in stocks:
-                print("Erreur : ce produit n'existe pas.")
+                print("Erreur : cet article n'existe pas.")
                 continue
-            print("Resultat de la recherche : ")
-            for nom, infos in stocks.items():
-                quantite = infos["qte"]
-                categorie = infos["cat"]
-                print(f"{nom.capitalize():<10} : {quantite:>5} {categorie.capitalize():>10}")
+            else:
+                print("\nResultat de la recherche : ")
+                quantite = stocks[prod_recherche]["qte"]
+                categorie = stocks[prod_recherche]["cat"]
+                print("-------------------------------")
+                print(f"{prod_recherche.capitalize():<10} : {quantite:>5} {categorie.capitalize():>10}")
+                print("-------------------------------\n")
             #print("_________________________________")
     return
 
 def ajout_stock():
     while True:
         try:
-            nom_prod = input("\nEntrez le nom du produit (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+            nom_prod = input("\nEntrez le nom de l'article (ou 'retour' pour revenir au menu principal) : ").strip().lower()
             if nom_prod == "retour":
                 return
             if nom_prod == "":
@@ -79,7 +63,7 @@ def ajout_stock():
                     else:
                         #categorie = input("Entrez la catégorie du produit : ")
                         stocks[nom_prod]["qte"] += quantite
-                        print("\n✅ Quantité ajouter !")
+                        print("\n✅ Quantité ajouté !")
                         #sauv_stock(nom_prod, quantite)
                         break
             else:
@@ -88,10 +72,9 @@ def ajout_stock():
                     if quantite <= 0:
                         quantite = int(input("\n❌ Erreur : Entrez une valeur positive : "))
                     else:
-                        categorie = input("Entrez la catégorie du produit : ")
+                        categorie = input("Entrez la catégorie de l'article : ")
                         stocks[nom_prod] = {"qte" : int(quantite), "cat" : categorie}
-                        print(f"{nom_prod} : {quantite}")
-                        print("\n✅ Le produit a ete ajouté ➕!")
+                        print("\n✅ Article ajouté ➕!")
                        #sauv_stock(nom_prod, quantite)
                         break
                             
@@ -104,11 +87,11 @@ def ajout_stock():
 def modifier_prod():
     voir_stock()
     while True:
-                prod_modif = input("\nQuel produit souhaitez vous modifier (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+                prod_modif = input("\nQuel article souhaitez vous modifier (ou 'retour' pour revenir au menu principal) : ").strip().lower()
                 if prod_modif == "retour":
                     return
                 if prod_modif not in stocks:
-                    print("Erreur : ce produit n'existe pas.")
+                    print("Erreur : cet article n'existe pas.")
                     continue
                 else:
                     print(f"Modification de '{prod_modif}' (stock actuel : {stocks[prod_modif]["qte"]}")
@@ -123,7 +106,7 @@ def modifier_prod():
                             if choix == 1:
                                 nouveau_nom = input("Entrez le nouveau nom : ")
                                 if nouveau_nom in stocks:
-                                    print(f"❌ Erreur : Le produit '{nouveau_nom}' existe déjà !")
+                                    print(f"❌ Erreur : L'article '{nouveau_nom}' existe déjà !")
                                     return
                                 else:
                                     stocks[nouveau_nom] = stocks.pop(prod_modif)
@@ -151,11 +134,11 @@ def modifier_prod():
 def vendre_produit():
     voir_stock()
     while True:
-        prod_vend = input("\nQuel produit souhaitez vous vendre (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+        prod_vend = input("\nQuel article souhaitez vous vendre (ou 'retour' pour revenir au menu principal) : ").strip().lower()
         if prod_vend == "retour":
                 return
         if prod_vend not in stocks:
-            print("\n❌ Erreur : ce produit n'existe pas !")
+            print("\n❌ Erreur : cet article n'existe pas !")
             continue
         while True:
             try:
@@ -183,7 +166,7 @@ def vendre_produit():
 def supprimer_stock():
     voir_stock()
     while True:
-            prod_supp = input("\nQuel produit souhaitez vous supprimer (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+            prod_supp = input("\nQuel article souhaitez vous supprimer (ou 'retour' pour revenir au menu principal) : ").strip().lower()
             if prod_supp == "retour":
                 return
             if prod_supp not in stocks:
@@ -191,7 +174,7 @@ def supprimer_stock():
                 continue
             else:
                 while True:
-                    confirmation = input(f"\nÊtes-vous sûr de vouloir supprimer le produit '{prod_supp}' ? (oui/non) : ").strip().lower()
+                    confirmation = input(f"\nÊtes-vous sûr de vouloir supprimer l'article '{prod_supp}' ? (oui/non) : ").strip().lower()
                     if confirmation != "oui" and confirmation != "non":
                         print("\n❌ Erreur : Veuillez répondre par 'oui' ou 'non'.")
                         continue
@@ -203,45 +186,3 @@ def supprimer_stock():
                         print(f"Le produit {prod_supp} a ete supprimer 🗑️\n")
                         sauv_stock()
                         return
-        
-stocks = {}
-
-# Programme principale
-charg_stock()
-
-while True:
-    print("\n\n====== MENU GESTION STOCK ======")
-    print("1. Voir le stock")
-    print("2. Rechercher un produit")
-    print("3. Ajouter du stock")
-    print("4. Vendre un produit")
-    print("5. Supprimer un produit")
-    print("6. Modifier un produit")
-    print("7. Quitter")
-    print("====================")
-
-    try:
-        option = int(input("Veuillez Choisir : "))
-        if not (1 <= option <= 7) :
-            print("❌ Erreur : Le chiffre doit être entre (1 et 6)") 
-            continue   
-    except ValueError:
-        print("\n❌ Erreur : Vous avez entré une LETTRE, veuillez entrer un CHIFFRE.")
-        continue
-
-    match option:
-        case 1:
-            voir_stock()
-        case 2:
-            recherche_stock()
-        case 3:
-            ajout_stock()
-        case 4:
-            vendre_produit()
-        case 5:
-            supprimer_stock()
-        case 6:
-            modifier_prod()
-        case 7:
-            sauv_stock()
-            break
