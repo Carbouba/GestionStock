@@ -1,10 +1,2 @@
-orange : 30 : fruit
-pomme : 3 : fruit
-savon : 11 : hygienne
-pommade : 3 : cosmetique
-ananas : 23 : fruit
-pasteque : 89 : fruit
-citron : 5 : fruit
-banane : 2 : fruit
-courge : 2 : legume
-detergent : 200 : hygiene
+pomme : 25 : fruit : 250
+orange : 23 : fruit : 100

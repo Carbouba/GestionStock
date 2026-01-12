@@ -1,27 +1,28 @@
 # Importation de données depuis les differents fichiers
-from data import stocks, charg_stock, sauv_stock
-from fonctions import voir_stock, recherche_stock, vendre_produit, ajout_stock, vendre_produit, supprimer_stock, modifier_prod
+import data
+import fonctions as f
 
 # Programme principale
 
 # Chargement de données du disque dur
-charg_stock()
+data.charg_stock()
 
 # Affichage du menu
 while True:
     print("\n\n====== MENU GESTION STOCK ======")
     print("1. Voir le stock")
-    print("2. Rechercher un article")
-    print("3. Ajouter un article")
-    print("4. Vendre un article")
-    print("5. Supprimer un article")
-    print("6. Modifier un article")
-    print("7. Quitter")
+    print("2. Voir l'historique")
+    print("3. Rechercher un article")
+    print("4. Ajouter un article")
+    print("5. Vendre un article")
+    print("6. Supprimer un article")
+    print("7. Modifier un article")
+    print("8. Quitter")
     print("====================")
 # Validation du choix
     try:
         option = int(input("Veuillez Choisir : "))
-        if not (1 <= option <= 7) : # Dois etre entre 1 et 7
+        if not (1 <= option <= 8) : # Dois etre entre 1 et 7
             print("❌ Erreur : Le chiffre doit être entre (1 et 6)") 
             continue   # on remonte au debut de la boucle
     except ValueError:
@@ -30,17 +31,20 @@ while True:
 
     match option:
         case 1:
-            voir_stock()
+            f.voir_stock()
         case 2:
-            recherche_stock()
+            #print("\n⏳ Bientot disponible")
+            data.voir_historique()
         case 3:
-            ajout_stock()
+            f.recherche_stock()
         case 4:
-            vendre_produit()
+            f.ajout_stock()
         case 5:
-            supprimer_stock()
+            f.vendre_produit()
         case 6:
-            modifier_prod()
+            f.supprimer_stock()
         case 7:
-            sauv_stock()
+            f.modifier_prod()
+        case 8:
+            data.sauv_stock()
             break
