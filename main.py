@@ -2,7 +2,7 @@
 import data
 import fonctions as f
 
-# Programme principale
+# Programme principal
 
 # Chargement de données du disque dur
 data.charg_stock()
@@ -21,14 +21,16 @@ while True:
     print("====================")
 # Validation du choix
     try:
-        option = int(input("Veuillez Choisir : "))
-        if not (1 <= option <= 8) : # Dois etre entre 1 et 7
-            print("❌ Erreur : Le chiffre doit être entre (1 et 6)") 
+        # Lecture et validation de l'option utilisateur.
+        option = int(input("Veuillez choisir : "))
+        if not (1 <= option <= 8) : # Doit être entre 1 et 8
+            print("❌ Erreur : Le chiffre doit être entre 1 et 8.") 
             continue   # on remonte au debut de la boucle
     except ValueError:
         print("\n❌ Erreur : Vous avez entré une LETTRE, veuillez entrer un CHIFFRE.")
         continue
 
+    # Routage vers la fonction correspondant au choix.
     match option:
         case 1:
             f.voir_stock()

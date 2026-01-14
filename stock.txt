@@ -1,2 +1,3 @@
-pomme : 25 : fruit : 250
-orange : 23 : fruit : 100
+orange : 20 : fruit : 100
+pomme : 1 : fruit : 102
+banane : 23 : fruit : 23

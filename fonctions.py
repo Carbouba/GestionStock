@@ -3,53 +3,64 @@ import data
 
 # Fonction pour afficher la liste des articles
 def voir_stock():
+    # Affiche le stock sous forme de tableau lisible.
     total_stock = len(data.stocks)
+    # Cas particulier: stock vide.
     if total_stock == 0:
         print(f"Aucun article disponible pour le moment !")
     else:
+        # En-tête d'affichage.
         print("\n===== Liste des articles en stock =====\n")
-        print("-" * 50)
-        print(f"{'Article':<10} | {'Stock':>5} | {'Catégorie':>10} | {'Prix unitaire':>10}")
-        print("-" * 50)
+        print("-" * 60)
+        print(f"{'Article':<15} | {'Stock':>6} | {'Catégorie':<15} | {'Prix unitaire':>12}")
+        print("-" * 60)
+        # Parcours et affichage des articles.
         for nom, infos in data.stocks.items(): # On parcour le dictionaire tout entier
-            quantite = infos["qte"]
+            quantite = infos['qte']
             categorie = infos["cat"]
             prix_unitaire = infos["prx"]
-            print(f"{nom.capitalize():<13} {quantite:>3} {categorie.capitalize():>13} {prix_unitaire:>10}")
+            print(f"{nom.capitalize():<15} | {quantite:>6} | {categorie.capitalize():<15} | {prix_unitaire:>12}")
         #print("_________________________________")
     return
 
 # Fonction pour rechercher un article
 def recherche_stock():
+    # Gère la recherche interactive d'un article par son nom.
     total_stock = len(data.stocks)
+    # Cas particulier: stock vide.
     if total_stock == 0:
         print(f"Aucun article disponible pour le moment !")
     else:
         print("\n===== Rechercher un article =====\n")
         while True:
-            prod_recherche = input("Entrez le nom de l'article a rehchercher (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+            # Saisie du nom à rechercher ou retour au menu.
+            prod_recherche = input("Entrez le nom de l'article à rechercher (ou 'retour' pour revenir au menu principal) : ").strip().lower()
             if prod_recherche == "retour":
                 return
             if prod_recherche == "": # Si l'utilisateur ne tape rien et valide
                 print("\n❌ Erreur : Vous devez saisir un nom correct : ")
                 continue
+            # Validation de l'existence de l'article.
             if prod_recherche not in data.stocks:
                 print("Erreur : cet article n'existe pas.")
                 continue
             else:
-                print("\nResultat de la recherche : ")
-                quantite = data.stocks[prod_recherche]["qte"]
+                print("\nRésultat de la recherche : ")
+                quantite = data.stocks[prod_recherche]['qte']
                 categorie = data.stocks[prod_recherche]["cat"]
-                Prix_unitaire = data.stocks[prod_recherche]["prx"]
+                prix_unitaire = data.stocks[prod_recherche]["prx"]
+                # Affichage du résultat trouvé.
                 print("-" * 50)
-                print(f"{prod_recherche:<10} {quantite:>5} {categorie:>10} {Prix_unitaire:>10}")
+                print(f"{prod_recherche:<10} {quantite:>5} {categorie:>10} {prix_unitaire:>10}")
                 print("-" * 50)
             #print("_________________________________")
     return
 
 def ajout_stock():
+    # Ajoute un nouvel article ou augmente la quantité d'un article existant.
     while True:
         try:
+            # Saisie du nom du produit ou retour.
             nom_prod = input("\nEntrez le nom de l'article (ou 'retour' pour revenir au menu principal) : ").strip().lower()
             if nom_prod == "retour":
                 return
@@ -57,18 +68,23 @@ def ajout_stock():
                 print("\n❌ Erreur : Vous devez saisir un nom correct : ")
                 continue
             
+            # Si l'article existe déjà, on ajoute une quantité.
             if nom_prod in data.stocks:
-                quantite = int(input(f"\nIl y en a deja {data.stocks[nom_prod]["qte"]}, combien voulez-vous en ajouter : "))
+                # Message d'information affiché une seule fois.
+                print(f"\nIl y en a déjà {data.stocks[nom_prod]['qte']}.")
                 while True:
+                    # Redemande tant que la quantité n'est pas valide.
+                    quantite = int(input("Combien voulez-vous en ajouter : "))
                     if quantite <= 0:
-                        quantite = int(input("\n❌ Erreur : Entrez une valeur positive : "))
+                        print("\n❌ Erreur : Entrez une valeur positive : ")
                     else:
                         #categorie = input("Entrez la catégorie du produit : ")
-                        data.stocks[nom_prod]["qte"] += quantite
-                        print("\n✅ Quantité ajouté !")
+                        data.stocks[nom_prod]['qte'] += quantite
+                        print("\n✅ Quantité ajoutée !")
                         #sauv_stock(nom_prod, quantite)
                         break
             else:
+                # Sinon, création d'un nouvel article.
                 while True:
                     quantite = int(input("\nEntrez la quantité : "))
                     if quantite <= 0 :
@@ -80,39 +96,47 @@ def ajout_stock():
                             print("\n❌ Erreur : Entrez une valeur positive")
                             continue
                         categorie = input("Entrez la catégorie de l'article : ")
-                        data.stocks[nom_prod] = {"qte" : int(quantite), "cat" : categorie, "prx" : int(prix_unitaire)}
-                        print("\n✅ Article ajouté ➕!")
+                        data.stocks[nom_prod] = {'qte' : int(quantite), "cat" : categorie, "prx" : int(prix_unitaire)}
+                        print("\n✅ Article ajouté !")
                         break
                     break              
         except ValueError:
             print("\n❌ Erreur : Vous avez entré une LETTRE, veuillez entrer un CHIFFRE.")
             continue
     
-        data.historique(f"Ajout de {quantite} {nom_prod}")
+        # Trace et sauvegarde après ajout.
+        data.historique(f"Ajout ({nom_prod} : +{quantite})")
         data.sauv_stock()
         
 
 def modifier_prod():
+    # Permet de renommer un article ou d'ajuster sa quantité.
     voir_stock()
     while True:
-                prod_modif = input("\nQuel article souhaitez vous modifier (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+                # Saisie de l'article à modifier.
+                prod_modif = input("\nQuel article souhaitez-vous modifier (ou 'retour' pour revenir au menu principal) : ").strip().lower()
                 if prod_modif == "retour":
                     return
                 if prod_modif not in data.stocks:
                     print("Erreur : cet article n'existe pas.")
                     continue
                 else:
-                    print(f"Modification de '{prod_modif}' (stock actuel : {data.stocks[prod_modif]["qte"]}")
-                    print("1. Rennomer")
+                    print(f"Modification de '{prod_modif}' (stock actuel : {data.stocks[prod_modif]['qte']})")
+                    print("1. Renommer")
                     print("2. Corriger la quantité")
                     while True:
                         try:
+                            # Choix du type de modification.
                             choix = int(input("Votre choix : "))
                             if not (1 <= choix <= 2):
-                                print("Erreur : choix invalide choisissez (1-2)")
+                                print("Erreur : choix invalide, choisissez (1-2).")
                                 continue
                             if choix == 1:
-                                nouveau_nom = input("Entrez le nouveau nom : ")
+                                # Renommage de l'article.
+                                nouveau_nom = input("Entrez le nouveau nom : ").strip().lower()
+                                if nouveau_nom == "":
+                                    print("❌ Erreur : Vous devez saisir un nom correct : ")
+                                    continue
                                 if nouveau_nom in data.stocks:
                                     print(f"❌ Erreur : L'article '{nouveau_nom}' existe déjà !")
                                     return
@@ -120,22 +144,23 @@ def modifier_prod():
                                     data.stocks[nouveau_nom] = data.stocks.pop(prod_modif)
                                     print("\n✅ Nom changé !")
                                     data.sauv_stock()
-                                    data.historique(f"Rennomage de l'article {prod_modif} vers {nouveau_nom}")
+                                    data.historique(f"Renommage ({prod_modif} -> {nouveau_nom})")
                                     return
                             else:
                                 while True:
+                                    # Mise à jour de la quantité.
                                     nouveau_quant = int(input("Entrez la nouvelle quantité : "))
                                     if nouveau_quant <= 0:
                                         print("❌ Erreur : Entrez une valeur positive : ")
                                         continue
                                     else:
-                                        qunt_actu = data.stocks[prod_modif]["qte"]
+                                        qunt_actu = data.stocks[prod_modif]['qte']
                                         if nouveau_quant == qunt_actu:
-                                            print("❌ Erreur : la valeur existe déjâ.")
+                                            print("❌ Erreur : la valeur existe déjà.")
                                             continue
-                                        data.stocks[prod_modif]["qte"] = nouveau_quant
-                                        print("\n✅ Quantité corrigé !")
-                                        data.historique(f"Nouvelle quantité pour l'article {prod_modif} {qunt_actu} vers {nouveau_quant}")
+                                        data.stocks[prod_modif]['qte'] = nouveau_quant
+                                        print("\n✅ Quantité corrigée !")
+                                        data.historique(f"Quantité modifiée ({prod_modif} : {qunt_actu} -> {nouveau_quant})")
                                         data.sauv_stock()
                                         
                                         return
@@ -143,9 +168,11 @@ def modifier_prod():
                             print("❌ Erreur : Vous avez entré une LETTRE, veuillez entrer un CHIFFRE.")
 
 def vendre_produit():
+    # Décrémente le stock d'un article suite à une vente.
     voir_stock()
     while True:
-        prod_vend = input("\nQuel article souhaitez vous vendre (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+        # Saisie de l'article à vendre.
+        prod_vend = input("\nQuel article souhaitez-vous vendre (ou 'retour' pour revenir au menu principal) : ").strip().lower()
         if prod_vend == "retour":
                 return
         if prod_vend not in data.stocks:
@@ -153,22 +180,32 @@ def vendre_produit():
             continue
         while True:
             try:
-                    qunt_vend = int(input("\nCombien voulez vous vendre : "))
+                    # Saisie de la quantité à vendre.
+                    qunt_vend = int(input("\nCombien voulez-vous vendre : "))
                     if qunt_vend <= 0:
                         print("❌ Erreur : Entrez une valeur positive : ")
                         continue
-                    stock_dispo = data.stocks[prod_vend]["qte"]
+                    stock_dispo = data.stocks[prod_vend]['qte']
+                    # Validation du stock disponible.
                     if qunt_vend > stock_dispo:
-                        print("\n❌ Erreur : vous avez depassez la quantité disponible en stock !")
+                        print("\n❌ Erreur : vous avez dépassé la quantité disponible en stock !")
                         continue
                     else:
-                        data.stocks[prod_vend]["qte"] -= qunt_vend
-                        if data.stocks[prod_vend]["qte"] <= 0:
+                        stock_epuise = False
+                        data.stocks[prod_vend]['qte'] -= qunt_vend
+                        # Si le stock tombe à zéro, on supprime l'article.
+                        if data.stocks[prod_vend]['qte'] <= 0:
                             data.stocks.pop(prod_vend, None)
-                            print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock épuisée.\n")
+                            stock_epuise = True
+                            print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock épuisé.\n")
                         else:
-                            print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock restant : {data.stocks[prod_vend]["qte"]}\n")    
-                        data.historique(f"Vente de {qunt_vend} {prod_vend}")
+                            print(f"\n✅ {qunt_vend} {prod_vend} vendu. Stock restant : {data.stocks[prod_vend]['qte']}\n")    
+                        # Trace et sauvegarde après vente.
+                        if stock_epuise:
+                            data.historique(f"Vente de {qunt_vend} {prod_vend} (stock épuisé)")
+                        else:
+                            stock_restant = data.stocks[prod_vend]['qte']
+                            data.historique(f"Vente de {qunt_vend} {prod_vend} (stock restant : {stock_restant})")
                         data.sauv_stock()
                         
                     return
@@ -177,9 +214,11 @@ def vendre_produit():
                     continue
                 
 def supprimer_stock():
+    # Supprime un article du stock après confirmation.
     voir_stock()
     while True:
-            prod_supp = input("\nQuel article souhaitez vous supprimer (ou 'retour' pour revenir au menu principal) : ").strip().lower()
+            # Saisie de l'article à supprimer.
+            prod_supp = input("\nQuel article souhaitez-vous supprimer (ou 'retour' pour revenir au menu principal) : ").strip().lower()
             if prod_supp == "retour":
                 return
             if prod_supp not in data.stocks:
@@ -187,6 +226,7 @@ def supprimer_stock():
                 continue
             else:
                 while True:
+                    # Confirmation explicite avant suppression.
                     confirmation = input(f"\nÊtes-vous sûr de vouloir supprimer l'article '{prod_supp}' ? (oui/non) : ").strip().lower()
                     if confirmation != "oui" and confirmation != "non":
                         print("\n❌ Erreur : Veuillez répondre par 'oui' ou 'non'.")
@@ -196,8 +236,9 @@ def supprimer_stock():
                         break
                     else:
                         data.stocks.pop(prod_supp, None)
-                        print(f"Le produit {prod_supp} a ete supprimer 🗑️\n")
-                        data.historique(f"Suppresion de l'article {prod_supp}")
+                        print(f"Le produit {prod_supp} a été supprimé 🗑️\n")
+                        # Trace et sauvegarde après suppression.
+                        data.historique(f"Suppression ({prod_supp})")
                         data.sauv_stock()
                         
                         return

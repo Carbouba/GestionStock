@@ -10,3 +10,13 @@
 [11/01/2026 à 21:18] : Ajout de 2 234
 [11/01/2026 à 21:18] : Ajout de 23 pomme
 [11/01/2026 à 21:19] : Suppresion de l'article 234
+[14/01/2026 à 11:49] : Ajout de 5 pomme
+[14/01/2026 à 11:59] : Ajout de 5 pomme
+[14/01/2026 à 11:59] : Ajout de 4 retou
+[14/01/2026 à 12:00] : Renommage de l'article retou vers banane
+[14/01/2026 à 12:04] : Vente de 4 banane
+[14/01/2026 à 12:54] : Vente de 35 pomme (stock épuisé)
+[14/01/2026 à 12:54] : Vente de 3 orange
+[14/01/2026 à 12:57] : Ajout de 2 pomme
+[14/01/2026 à 12:57] : Ajout de 23 banane
+[14/01/2026 à 12:58] : Vente de 1 pomme (stock restant : 1)
