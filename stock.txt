@@ -1,3 +1,5 @@
-orange : 20 : fruit : 100
-pomme : 1 : fruit : 102
 banane : 23 : fruit : 23
+citron : 18 : fruit : 50
+pomme : 1 : fruit : 50
+courge : 23 : legume : 25
+citronnelle : 99 : fruit : 100

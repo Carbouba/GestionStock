@@ -51,7 +51,7 @@ def voir_historique():
             else:
                 print("\n===== HISTORIQUE DES ACTIVITÉS =====\n")
                 print("-" * 60)
-                print(f"{'Date':<20} | {'Action':<35}")
+                print(f"{'Date':<20} | {'Action':<45}")
                 print("-" * 60)
                 for ligne in lines:
                     ligne_propre = ligne.strip()

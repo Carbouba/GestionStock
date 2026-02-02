@@ -11,15 +11,15 @@ def voir_stock():
     else:
         # En-tête d'affichage.
         print("\n===== Liste des articles en stock =====\n")
-        print("-" * 60)
+        print("-" * 65)
         print(f"{'Article':<15} | {'Stock':>6} | {'Catégorie':<15} | {'Prix unitaire':>12}")
-        print("-" * 60)
+        print("-" * 65)
         # Parcours et affichage des articles.
         for nom, infos in data.stocks.items(): # On parcour le dictionaire tout entier
             quantite = infos['qte']
             categorie = infos["cat"]
             prix_unitaire = infos["prx"]
-            print(f"{nom.capitalize():<15} | {quantite:>6} | {categorie.capitalize():<15} | {prix_unitaire:>12}")
+            print(f"{nom.capitalize():<15} | {quantite:>6} | {categorie.capitalize():<15} | {prix_unitaire:>10} Franc CFA")
         #print("_________________________________")
     return
 
@@ -51,7 +51,7 @@ def recherche_stock():
                 prix_unitaire = data.stocks[prod_recherche]["prx"]
                 # Affichage du résultat trouvé.
                 print("-" * 50)
-                print(f"{prod_recherche:<10} {quantite:>5} {categorie:>10} {prix_unitaire:>10}")
+                print(f"{prod_recherche:<10} {quantite:>5} {categorie:>10} {prix_unitaire:>10} Franc CFA")
                 print("-" * 50)
             #print("_________________________________")
     return
@@ -133,10 +133,12 @@ def modifier_prod():
                                 continue
                             if choix == 1:
                                 # Renommage de l'article.
-                                nouveau_nom = input("Entrez le nouveau nom : ").strip().lower()
+                                nouveau_nom = input("Entrez le nouveau nom (ou 'Annuler' pour revenir au menu principal): ").strip().lower()
                                 if nouveau_nom == "":
                                     print("❌ Erreur : Vous devez saisir un nom correct : ")
                                     continue
+                                if nouveau_nom == "annuler":
+                                    return
                                 if nouveau_nom in data.stocks:
                                     print(f"❌ Erreur : L'article '{nouveau_nom}' existe déjà !")
                                     return
@@ -149,7 +151,9 @@ def modifier_prod():
                             else:
                                 while True:
                                     # Mise à jour de la quantité.
-                                    nouveau_quant = int(input("Entrez la nouvelle quantité : "))
+                                    nouveau_quant = int(input("Entrez la nouvelle quantité (ou 'Annuler' pour revenir au menu principal) : "))
+                                    if nouveau_quant == "annuler":
+                                        return
                                     if nouveau_quant <= 0:
                                         print("❌ Erreur : Entrez une valeur positive : ")
                                         continue
@@ -207,6 +211,14 @@ def vendre_produit():
                             stock_restant = data.stocks[prod_vend]['qte']
                             data.historique(f"Vente de {qunt_vend} {prod_vend} (stock restant : {stock_restant})")
                         data.sauv_stock()
+                        prix_unitaire = data.stocks[prod_vend]['prx']
+                        total = qunt_vend * prix_unitaire
+                        print("===== FACTURE DE VENTE =====\n")
+                        print("-" * 70)
+                        print(f"{'Designation':<15} | {'Quantité':>6} | {'Prix unitaire':<15} | {'Total':>12}")
+                        print("-" * 70)
+                        print(f"{prod_vend.capitalize():<15} | {qunt_vend:>8} | {prix_unitaire:>5} Franc CFA | {total:>8} Franc CFA")
+
                         
                     return
             except ValueError:
@@ -242,3 +254,6 @@ def supprimer_stock():
                         data.sauv_stock()
                         
                         return
+
+
+
