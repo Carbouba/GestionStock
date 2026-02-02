@@ -64,3 +64,6 @@ def voir_historique():
     except FileNotFoundError:
         print("Aucun historique pour l'instant.")
     return
+
+
+# Rien à ajouter après cette ligne

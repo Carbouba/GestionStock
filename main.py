@@ -50,3 +50,5 @@ while True:
         case 8:
             data.sauv_stock()
             break
+
+# Rien à ajouter après cette ligne

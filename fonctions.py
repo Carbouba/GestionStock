@@ -255,5 +255,5 @@ def supprimer_stock():
                         
                         return
 
-
+# Rien à ajouter après cette ligne
 
