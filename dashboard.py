@@ -34,6 +34,24 @@ titre = CTkLabel(top_frame,
 titre.place(x=50, y=75)
 
 # Bouton de deconnexion
+# Confirtmation de deconnexion
+def confirm_logout():
+    response = CTkMessagebox(title="Confirmation de déconnexion",
+                             message="Êtes-vous sûr de vouloir vous déconnecter ?",
+                             icon="question",
+                             option_1="Oui",
+                             option_2="Non")
+    if response == "Oui":
+        root.destroy()  # Ferme la fenêtre principale
+
+user_icon = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/round-account-button-with-user-inside_icon-icons.com_72596.png"), 
+                     size=(35, 35))
+user_icon_label = CTkLabel(top_frame, 
+                           image=user_icon, 
+                           text="",
+                           )
+user_icon_label.place(x=1650, y=77)
+
 disconnect = CTkButton(top_frame,
                         text="Se déconnecter",
                         font=s.FONTS["button"],
@@ -44,8 +62,9 @@ disconnect = CTkButton(top_frame,
                         height=40,
                         corner_radius=5,
                         cursor="hand2",
+                        command=confirm_logout
                         )
-disconnect.place(x=1600, y=77)
+disconnect.place(x=1500, y=77)
 
 # Frame principale
 main_frame = CTkFrame(root, 
@@ -130,9 +149,6 @@ add_button = CTkButton(main_frame,
                         cursor="hand2"
                         )
 add_button.place(x=26, y=320)
-
-
-
 
 # Lance l'application sur le menu principal puis démarre la boucle graphique.
 root.mainloop()
