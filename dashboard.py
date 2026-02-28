@@ -13,9 +13,9 @@ root.title("Gestionnaire de stock")
 root.geometry("1800x900")
 root.resizable(0, 0)
 root.configure(fg_color=s.COLORS["bg2"])
-# image = CTkImage(Image.open("cover.jpg"), size=(930,500))
-# imagelabel = CTkLabel(root, image=image)
-# imagelabel.place(x=50 , y=0)
+image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/cover.jpg"), size=(930,500))
+imagelabel = CTkLabel(root, image=image)
+imagelabel.place(x=50 , y=0)
 
 # Titre pricipal
 top_frame = CTkFrame(root,

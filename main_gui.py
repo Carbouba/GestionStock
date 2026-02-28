@@ -13,10 +13,10 @@ root.title("Se connecter")
 root.geometry("930x578")
 root.resizable(0, 0)
 root.configure(fg_color=s.COLORS["surface"])
-image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/authentication.png"), 
-                 size=(500,470))
+image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/cover.jpg"), 
+                 size=(800,470))
 imagelabel = CTkLabel(root, image=image, text="")
-imagelabel.place(x=400 , y=50)
+imagelabel.place(x=180 , y=50)
 
 # Titre pricipal
 titre = CTkLabel(root, 
@@ -117,7 +117,7 @@ def login_form():
     sub_new_label.place(x=32, y=30)
 
     username_plas_label = CTkLabel(type_zone_frame, 
-                        text="Nom d'utilisateur",
+                        text="Email ou nom d'utilisateur",
                         text_color=s.COLORS["muted"],   
                         font=("Roboto", 10)                    
                         )
@@ -273,14 +273,17 @@ def sign_up_form():
                         )
     sub_new_label.place(x=32, y=35)
 
-    username_plas_label = CTkLabel(type_zone_frame, 
+    user_name_frame = CTkFrame(type_zone_frame, fg_color=s.COLORS["bg"])
+    user_name_frame.place(x=34, y=65)
+
+    username_plas_label = CTkLabel(user_name_frame, 
                         text="Nom d'utilisateur",
                         text_color=s.COLORS["muted"],   
                         font=("Roboto", 10)                    
                         )
-    username_plas_label.place(x=34, y=65)
+    username_plas_label.place(x=0, y=0)
 
-    user_name_entry = CTkEntry(type_zone_frame, 
+    user_name_entry = CTkEntry(user_name_frame, 
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -290,7 +293,27 @@ def sign_up_form():
                             height=30,
                             corner_radius=5
                             )
-    user_name_entry.place(x=32, y=85)
+    user_name_entry.place(x=0, y=0)
+
+    username_mail_label = CTkLabel(type_zone_frame, 
+                        text="Adresse email",
+                        text_color=s.COLORS["muted"],   
+                        font=("Roboto", 10)                    
+                        )
+    username_mail_label.place(x=34, y=65)
+
+    user_mail_entry = CTkEntry(type_zone_frame, 
+                            placeholder_text="",
+                            text_color="black",
+                            fg_color="white",
+                            border_width=2,
+                            border_color=s.COLORS["bg"],
+                            width=190,
+                            height=30,
+                            corner_radius=5
+                            )
+    user_mail_entry.place(x=32, y=85)
+    
 
     mdp_plas_label = CTkLabel(type_zone_frame, 
                         text="Mot de passe",
@@ -456,16 +479,12 @@ def forgot_password_form():
     label_cancel = CTkButton(type_zone_frame, 
                         text="Annuler",
                         font=("Roboto", 15), 
-                        text_color=s.COLORS["primary"], 
-                        fg_color=s.COLORS["bg"],
-                        hover_color=s.COLORS["primary_hover"],
-                        hover=False,
-                        cursor="hand2",
+                      text_color="white", 
+                        fg_color=s.COLORS["danger"],
+                        hover_color=s.COLORS["danger_hover"],
                         corner_radius=5,
-                        border_width=2,
-                        border_color=s.COLORS["primary"],
+                        cursor="hand2",
                         width=190,
-                        height=10,
                         command=login_form
                         )
     label_cancel.place(relx=0.5, y=170, anchor=CENTER)
