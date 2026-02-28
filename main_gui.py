@@ -1,4 +1,4 @@
-# Importation des modules 
+# Importation des modules
 from customtkinter import *
 from CTkMessagebox import *
 from PIL import Image
@@ -13,22 +13,22 @@ root.title("Se connecter")
 root.geometry("930x578")
 root.resizable(0, 0)
 root.configure(fg_color=s.COLORS["surface"])
-image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/cover.jpg"), 
+image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/cover.jpg"),
                  size=(800,470))
 imagelabel = CTkLabel(root, image=image, text="")
 imagelabel.place(x=180 , y=50)
 
 # Titre pricipal
-titre = CTkLabel(root, 
+titre = CTkLabel(root,
                  text="Systéme de gestion de stock",
-                 justify="center", 
+                 justify="center",
                  font=s.FONTS["title"],
                  text_color=s.COLORS["primary"],
                  bg_color=s.COLORS["surface"]
                  )
 titre.place(x=65, y=90)
 
-subtitle = CTkLabel(root, 
+subtitle = CTkLabel(root,
                 text="Gérez votre stock facilement et efficacement",
                 justify="center",
                 font=s.FONTS["subtitle"],
@@ -37,30 +37,30 @@ subtitle = CTkLabel(root,
                 )
 subtitle.place(x=65, y=120)
 
-# Zone de saisie 
-type_zone_frame = CTkFrame(root, 
+# Zone de saisie
+type_zone_frame = CTkFrame(root,
                            fg_color=s.COLORS["bg"],
                            width=250, height=300,
                            corner_radius=10)
 type_zone_frame.place(x=60, y= 160)
 
 # def switch_main_image(switc_shoix):
-#     image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/authentication.png"), 
+#     image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/authentication.png"),
 #                  size=(500,470))
 #     if switc_shoix == "signup":
-#         image.CTkImage.configure(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/man-with-join-us-sign-for-open-recruitment.png"), 
+#         image.CTkImage.configure(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/man-with-join-us-sign-for-open-recruitment.png"),
 #                  size=(500,470))
 #         sign_up_form()
 
 
-# 
+#
 def nettoyage():
     for widgets in type_zone_frame.winfo_children():
         widgets.destroy()
 
 def go_dashboard():
-    import dashboard    
-                               
+    import dashboard
+
 
 def login_form():
 
@@ -68,8 +68,8 @@ def login_form():
 
     type_zone_frame.configure(height=320)
 
-    """ Fonction qui verifie si les champs du formulaire sont vides ou pas, 
-    si oui elle affiche un message d'erreur et met en surbrillance les champs vides, 
+    """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
+    si oui elle affiche un message d'erreur et met en surbrillance les champs vides,
     sinon elle ajoute l'employé à la base de données et affiche un message de succès. """
 
     def login_infos_check():
@@ -78,20 +78,20 @@ def login_form():
             user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_entry.after(3000, lambda:user_name_entry.configure(border_color="white"))
             user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame, 
+            msg = CTkLabel(type_zone_frame,
                     text="Veuillez remplir tous les champs", justify="center",
                     font=("Roboto", 13),
                     text_color=s.COLORS["danger_light"])
             msg.place(relx=0.5, y=280, anchor=CENTER)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
-            
-                        
+
+
         elif user_name_entry.get() == "adm" and user_mdp_entry.get() == "adm":
             root.destroy()
             go_dashboard()
 
         else:
-            msg = CTkLabel(type_zone_frame, 
+            msg = CTkLabel(type_zone_frame,
                     text="Nom d'utilisateur ou \n mot de passe incorrect", justify="center",
                     font=("Roboto", 13),
                     text_color=s.COLORS["danger_light"])
@@ -100,30 +100,30 @@ def login_form():
             user_name_entry.delete(0, END)
             user_mdp_entry.delete(0, END)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
-    
-    titre_label = CTkLabel(type_zone_frame, 
+
+    titre_label = CTkLabel(type_zone_frame,
                        text="Se connecter",
                        text_color=s.COLORS["primary"],
                        font=("Helvetica", 18, "bold"),
-                       
+
                        )
     titre_label.place(x=32, y=12)
 
-    sub_new_label = CTkLabel(type_zone_frame, 
+    sub_new_label = CTkLabel(type_zone_frame,
                         text="Saisissez les identifiants de votre compte",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     sub_new_label.place(x=32, y=30)
 
-    username_plas_label = CTkLabel(type_zone_frame, 
+    username_plas_label = CTkLabel(type_zone_frame,
                         text="Email ou nom d'utilisateur",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     username_plas_label.place(x=34, y=53)
 
-    user_name_entry = CTkEntry(type_zone_frame, 
+    user_name_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -135,14 +135,14 @@ def login_form():
                             )
     user_name_entry.place(x=32, y=75)
 
-    mdp_plas_label = CTkLabel(type_zone_frame, 
+    mdp_plas_label = CTkLabel(type_zone_frame,
                         text="Mot de passe",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     mdp_plas_label.place(x=34, y=105)
 
-    user_mdp_entry = CTkEntry(type_zone_frame, 
+    user_mdp_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -170,12 +170,12 @@ def login_form():
     )
     forgot_mdp_link.place(x=123, y=155)
 
-    
 
-    login_btn = CTkButton(type_zone_frame, 
+
+    login_btn = CTkButton(type_zone_frame,
                         text="Se connecter",
-                        font=("Roboto", 15), 
-                        text_color="white", 
+                        font=("Roboto", 15),
+                        text_color="white",
                         fg_color=s.COLORS["success"],
                         hover_color=s.COLORS["success_hover"],
                         corner_radius=5,
@@ -190,20 +190,20 @@ def login_form():
     #                         command=lambda: toggle_password_visibility(user_mdp_entry.get()))
     # check_box.place(x=32, y=215)
 
-    creat_new_label = CTkLabel(type_zone_frame, 
+    creat_new_label = CTkLabel(type_zone_frame,
                         text="Vous n'avez pas encore de compte ?",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     creat_new_label.place(x=43, y=215)
 
-    creat_new_link = CTkButton(type_zone_frame, 
+    creat_new_link = CTkButton(type_zone_frame,
                         text="Créer un compte",
-                        text_color=s.COLORS["primary"],   
+                        text_color=s.COLORS["primary"],
                         font=("Roboto", 13, "bold"),
                         fg_color=s.COLORS["bg"],
-                        cursor="hand2",  
-                        hover=False, 
+                        cursor="hand2",
+                        hover=False,
                         height=20,
                         width=50,
                         command=sign_up_form
@@ -219,8 +219,8 @@ def sign_up_form():
     type_zone_frame.configure( height=350)
 
 
-    """ Fonction qui verifie si les champs du formulaire sont vides ou pas, 
-    si oui elle affiche un message d'erreur et met en surbrillance les champs vides, 
+    """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
+    si oui elle affiche un message d'erreur et met en surbrillance les champs vides,
     sinon elle ajoute l'employé à la base de données et affiche un message de succès. """
 
 
@@ -232,58 +232,58 @@ def sign_up_form():
             user_name_entry.after(3000, lambda:user_name_entry.configure(border_color="white"))
             user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
             conf_user_mdp_entry.after(3000, lambda:conf_user_mdp_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame, 
+            msg = CTkLabel(type_zone_frame,
                     text="Veuillez remplir tous les champs", justify="center",
                     font=("Roboto", 13),
                     text_color=s.COLORS["danger_light"])
             msg.place(x=33, y=295)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
-                        
+
         elif conf_user_mdp_entry.get() != user_mdp_entry.get():
             user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
             conf_user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
             user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
             conf_user_mdp_entry.after(3000, lambda:conf_user_mdp_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame, 
+            msg = CTkLabel(type_zone_frame,
                     text="Les mots de passe \nne correspondent pas", justify="center",
                     font=("Roboto", 13),
                     text_color=s.COLORS["danger_light"])
             msg.place(relx=0.5, y=315, anchor=CENTER)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
-            
+
         else:
             pass
             # user_name_entry.delete(0, END)
             # user_mdp_entry.delete(0, END)
             # msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
 
-    titre_label = CTkLabel(type_zone_frame, 
+    titre_label = CTkLabel(type_zone_frame,
                        text="Créer un compte",
                        text_color=s.COLORS["primary"],
                        font=("Helvetica", 18, "bold"),
-                       
+
                        )
     titre_label.place(x=32, y=12)
 
-    sub_new_label = CTkLabel(type_zone_frame, 
+    sub_new_label = CTkLabel(type_zone_frame,
                         text="Remplissez les champs suivants pour \ncréer un compte",
-                        text_color=s.COLORS["muted"],   
+                        text_color=s.COLORS["muted"],
                         font=("Roboto", 10),
-                        justify="left"                  
+                        justify="left"
                         )
     sub_new_label.place(x=32, y=35)
 
     user_name_frame = CTkFrame(type_zone_frame, fg_color=s.COLORS["bg"])
     user_name_frame.place(x=34, y=65)
 
-    username_plas_label = CTkLabel(user_name_frame, 
+    username_plas_label = CTkLabel(user_name_frame,
                         text="Nom d'utilisateur",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     username_plas_label.place(x=0, y=0)
 
-    user_name_entry = CTkEntry(user_name_frame, 
+    user_name_entry = CTkEntry(user_name_frame,
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -295,14 +295,14 @@ def sign_up_form():
                             )
     user_name_entry.place(x=0, y=0)
 
-    username_mail_label = CTkLabel(type_zone_frame, 
+    username_mail_label = CTkLabel(type_zone_frame,
                         text="Adresse email",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     username_mail_label.place(x=34, y=65)
 
-    user_mail_entry = CTkEntry(type_zone_frame, 
+    user_mail_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -313,16 +313,16 @@ def sign_up_form():
                             corner_radius=5
                             )
     user_mail_entry.place(x=32, y=85)
-    
 
-    mdp_plas_label = CTkLabel(type_zone_frame, 
+
+    mdp_plas_label = CTkLabel(type_zone_frame,
                         text="Mot de passe",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     mdp_plas_label.place(x=34, y=115)
 
-    user_mdp_entry = CTkEntry(type_zone_frame, 
+    user_mdp_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -335,14 +335,14 @@ def sign_up_form():
                             )
     user_mdp_entry.place(x=32, y=135)
 
-    conf_mdp_plas_label = CTkLabel(type_zone_frame, 
+    conf_mdp_plas_label = CTkLabel(type_zone_frame,
                         text="Confirmez le mot de passe",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     conf_mdp_plas_label.place(x=34, y=165)
 
-    conf_user_mdp_entry = CTkEntry(type_zone_frame, 
+    conf_user_mdp_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -355,10 +355,10 @@ def sign_up_form():
                             )
     conf_user_mdp_entry.place(x=32, y=185)
 
-    sign_up_btn = CTkButton(type_zone_frame, 
+    sign_up_btn = CTkButton(type_zone_frame,
                         text="Créer un compte",
-                        font=("Roboto", 15), 
-                        text_color="white", 
+                        font=("Roboto", 15),
+                        text_color="white",
                         fg_color=s.COLORS["success"],
                         hover_color=s.COLORS["success_hover"],
                         corner_radius=5,
@@ -368,20 +368,20 @@ def sign_up_form():
                         )
     sign_up_btn.place(x=32, y=225)
 
-    creat_new_label = CTkLabel(type_zone_frame, 
+    creat_new_label = CTkLabel(type_zone_frame,
                         text="Vous avez deja un compte ?",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     creat_new_label.place(x=63, y=255)
 
-    creat_new_link = CTkButton(type_zone_frame, 
+    creat_new_link = CTkButton(type_zone_frame,
                         text="Se connecter",
-                        text_color=s.COLORS["primary"],   
+                        text_color=s.COLORS["primary"],
                         font=("Roboto", 13, "bold"),
                         fg_color=s.COLORS["bg"],
-                        cursor="hand2",  
-                        hover=False, 
+                        cursor="hand2",
+                        hover=False,
                         height=20,
                         width=50,
                         command=login_form
@@ -395,8 +395,8 @@ def forgot_password_form():
 
     type_zone_frame.configure(height=220)
 
-    """ Fonction qui verifie si les champs du formulaire sont vides ou pas, 
-    si oui elle affiche un message d'erreur et met en surbrillance les champs vides, 
+    """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
+    si oui elle affiche un message d'erreur et met en surbrillance les champs vides,
     sinon elle ajoute l'employé à la base de données et affiche un message de succès. """
 
 
@@ -404,17 +404,17 @@ def forgot_password_form():
         if user_name_recover_entry.get() == "":
             user_name_recover_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_recover_entry.after(3000, lambda:user_name_recover_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame, 
+            msg = CTkLabel(type_zone_frame,
                     text="Veuillez remplir tous les champs", justify="center",
                     font=("Roboto", 13),
                     text_color=s.COLORS["danger_light"])
             msg.place(x=33, y=190)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
-                        
+
         elif user_name_recover_entry.get() != "adm":
             user_name_recover_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_recover_entry.after(3000, lambda:user_name_recover_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame, 
+            msg = CTkLabel(type_zone_frame,
                     text="Ce nom d'utilisateur n'existe pas",
                     justify="center",
                     font=("Roboto", 13),
@@ -426,16 +426,16 @@ def forgot_password_form():
             # user_name_recover_entry.delete(0, END)
             # msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
 
-    
-    titre_label = CTkLabel(type_zone_frame, 
+
+    titre_label = CTkLabel(type_zone_frame,
          text="Reinitialiser le mot de passe",
             text_color=s.COLORS["primary"],
             font=("Helvetica", 15, "bold"),
-            
+
             )
     titre_label.place(x=32, y=12)
 
-    label = CTkLabel(type_zone_frame, 
+    label = CTkLabel(type_zone_frame,
          text="Entrez votre nom d'utilisateur pour \nréinitialiser votre mot de passe",
             text_color=s.COLORS["muted"],
             font=("Roboto", 10),
@@ -443,14 +443,14 @@ def forgot_password_form():
             )
     label.place(relx=0.5, y=50, anchor=CENTER)
 
-    user_name_recover_label = CTkLabel(type_zone_frame, 
+    user_name_recover_label = CTkLabel(type_zone_frame,
                         text="Nom d'utilisateur",
-                        text_color=s.COLORS["muted"],   
-                        font=("Roboto", 10)                    
+                        text_color=s.COLORS["muted"],
+                        font=("Roboto", 10)
                         )
     user_name_recover_label.place(x=34, y=70)
 
-    user_name_recover_entry = CTkEntry(type_zone_frame, 
+    user_name_recover_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -463,10 +463,10 @@ def forgot_password_form():
     user_name_recover_entry.place(x=32, y=90)
 
 
-    submit_btn = CTkButton(type_zone_frame, 
+    submit_btn = CTkButton(type_zone_frame,
                         text="Envoyer",
-                        font=("Roboto", 15), 
-                        text_color="white", 
+                        font=("Roboto", 15),
+                        text_color="white",
                         fg_color=s.COLORS["success"],
                         hover_color=s.COLORS["success_hover"],
                         corner_radius=5,
@@ -476,10 +476,10 @@ def forgot_password_form():
                         )
     submit_btn.place(relx=0.5, y=140, anchor=CENTER)
 
-    label_cancel = CTkButton(type_zone_frame, 
+    label_cancel = CTkButton(type_zone_frame,
                         text="Annuler",
-                        font=("Roboto", 15), 
-                      text_color="white", 
+                        font=("Roboto", 15),
+                      text_color="white",
                         fg_color=s.COLORS["danger"],
                         hover_color=s.COLORS["danger_hover"],
                         corner_radius=5,
@@ -489,7 +489,7 @@ def forgot_password_form():
                         )
     label_cancel.place(relx=0.5, y=170, anchor=CENTER)
 
- 
+
 
 
 # Démarrage
