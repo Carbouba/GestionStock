@@ -1,0 +1,25 @@
+# Secrets et tokens
+Cursor_Token.txt
+*.token
+.env
+.env.local
+
+# Environnement virtuel
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -216,7 +216,7 @@ def sign_up_form():
 
     nettoyage()
 
-    type_zone_frame.configure( height=350)
+    type_zone_frame.configure(height=390)
 
 
     """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
@@ -225,18 +225,20 @@ def sign_up_form():
 
 
     def sign_up_infos_check():
-        if user_name_entry.get() == "" or user_mdp_entry.get() == "" or conf_user_mdp_entry.get() == "":
+        if user_name_entry.get() == "" or email_entry.get() == "" or user_mdp_entry.get() == "" or conf_user_mdp_entry.get() == "":
             user_name_entry.configure(border_color=s.COLORS["danger_light"])
+            email_entry.configure(border_color=s.COLORS["danger_light"])
             user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
             conf_user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_entry.after(3000, lambda:user_name_entry.configure(border_color="white"))
+            email_entry.after(3000, lambda:email_entry.configure(border_color="white"))
             user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
             conf_user_mdp_entry.after(3000, lambda:conf_user_mdp_entry.configure(border_color="white"))
             msg = CTkLabel(type_zone_frame,
                     text="Veuillez remplir tous les champs", justify="center",
                     font=("Roboto", 13),
                     text_color=s.COLORS["danger_light"])
-            msg.place(x=33, y=295)
+            msg.place(relx=0.5, rely=1, y=-12, anchor=S)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
 
         elif conf_user_mdp_entry.get() != user_mdp_entry.get():
@@ -248,7 +250,7 @@ def sign_up_form():
                     text="Les mots de passe \nne correspondent pas", justify="center",
                     font=("Roboto", 13),
                     text_color=s.COLORS["danger_light"])
-            msg.place(relx=0.5, y=315, anchor=CENTER)
+            msg.place(relx=0.5, rely=1, y=-12, anchor=S)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
 
         else:
@@ -273,17 +275,20 @@ def sign_up_form():
                         )
     sub_new_label.place(x=32, y=35)
 
-    user_name_frame = CTkFrame(type_zone_frame, fg_color=s.COLORS["bg"])
-    user_name_frame.place(x=34, y=65)
+    # Grille : LABEL_ENTRY_GAP=20px (placeholder→entry), FIELD_SPACING=14px (entre couples)
+    Y_START = 70
+    LABEL_ENTRY_GAP = 20
+    FIELD_SPACING = 0
 
-    username_plas_label = CTkLabel(user_name_frame,
+    y = Y_START
+    username_plas_label = CTkLabel(type_zone_frame,
                         text="Nom d'utilisateur",
                         text_color=s.COLORS["muted"],
                         font=("Roboto", 10)
                         )
-    username_plas_label.place(x=0, y=0)
-
-    user_name_entry = CTkEntry(user_name_frame,
+    username_plas_label.place(x=34, y=y)
+    y += LABEL_ENTRY_GAP
+    user_name_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -293,16 +298,17 @@ def sign_up_form():
                             height=30,
                             corner_radius=5
                             )
-    user_name_entry.place(x=0, y=0)
+    user_name_entry.place(x=34, y=y)
 
-    username_mail_label = CTkLabel(type_zone_frame,
-                        text="Adresse email",
+    y += 30 + FIELD_SPACING
+    email_plas_label = CTkLabel(type_zone_frame,
+                        text="Email",
                         text_color=s.COLORS["muted"],
                         font=("Roboto", 10)
                         )
-    username_mail_label.place(x=34, y=65)
-
-    user_mail_entry = CTkEntry(type_zone_frame,
+    email_plas_label.place(x=34, y=y)
+    y += LABEL_ENTRY_GAP
+    email_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
                             fg_color="white",
@@ -312,16 +318,16 @@ def sign_up_form():
                             height=30,
                             corner_radius=5
                             )
-    user_mail_entry.place(x=32, y=85)
+    email_entry.place(x=34, y=y)
 
-
+    y += 30 + FIELD_SPACING
     mdp_plas_label = CTkLabel(type_zone_frame,
                         text="Mot de passe",
                         text_color=s.COLORS["muted"],
                         font=("Roboto", 10)
                         )
-    mdp_plas_label.place(x=34, y=115)
-
+    mdp_plas_label.place(x=34, y=y)
+    y += LABEL_ENTRY_GAP
     user_mdp_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
@@ -333,15 +339,16 @@ def sign_up_form():
                             corner_radius=5,
                             show="*"
                             )
-    user_mdp_entry.place(x=32, y=135)
+    user_mdp_entry.place(x=34, y=y)
 
+    y += 30 + FIELD_SPACING
     conf_mdp_plas_label = CTkLabel(type_zone_frame,
                         text="Confirmez le mot de passe",
                         text_color=s.COLORS["muted"],
                         font=("Roboto", 10)
                         )
-    conf_mdp_plas_label.place(x=34, y=165)
-
+    conf_mdp_plas_label.place(x=34, y=y)
+    y += LABEL_ENTRY_GAP
     conf_user_mdp_entry = CTkEntry(type_zone_frame,
                             placeholder_text="",
                             text_color="black",
@@ -353,8 +360,9 @@ def sign_up_form():
                             corner_radius=5,
                             show="*"
                             )
-    conf_user_mdp_entry.place(x=32, y=185)
+    conf_user_mdp_entry.place(x=34, y=y)
 
+    y += 30 + FIELD_SPACING
     sign_up_btn = CTkButton(type_zone_frame,
                         text="Créer un compte",
                         font=("Roboto", 15),
@@ -366,14 +374,15 @@ def sign_up_form():
                         command=sign_up_infos_check,
                         width=190
                         )
-    sign_up_btn.place(x=32, y=225)
+    sign_up_btn.place(x=34, y=y)
 
+    y += 36 + 2
     creat_new_label = CTkLabel(type_zone_frame,
                         text="Vous avez deja un compte ?",
                         text_color=s.COLORS["muted"],
                         font=("Roboto", 10)
                         )
-    creat_new_label.place(x=63, y=255)
+    creat_new_label.place(relx=0.5, y=y, anchor=CENTER)
 
     creat_new_link = CTkButton(type_zone_frame,
                         text="Se connecter",
@@ -386,7 +395,7 @@ def sign_up_form():
                         width=50,
                         command=login_form
                         )
-    creat_new_link.place(x=80, y=275)
+    creat_new_link.place(relx=0.5, y=y+18, anchor=CENTER)
 
 ##################################################################################
 
