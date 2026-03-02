@@ -1,7 +1,11 @@
 # Importation des modules
+#from tkinter import _Anchor
+import email
 from customtkinter import *
 from CTkMessagebox import *
 from PIL import Image
+import sqlite3
+import pymysql
 
 import style as s
 
@@ -44,15 +48,6 @@ type_zone_frame = CTkFrame(root,
                            corner_radius=10)
 type_zone_frame.place(x=60, y= 160)
 
-# def switch_main_image(switc_shoix):
-#     image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/authentication.png"),
-#                  size=(500,470))
-#     if switc_shoix == "signup":
-#         image.CTkImage.configure(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/man-with-join-us-sign-for-open-recruitment.png"),
-#                  size=(500,470))
-#         sign_up_form()
-
-
 #
 def nettoyage():
     for widgets in type_zone_frame.winfo_children():
@@ -60,6 +55,7 @@ def nettoyage():
 
 def go_dashboard():
     import dashboard
+
 
 
 def login_form():
@@ -218,6 +214,36 @@ def sign_up_form():
 
     type_zone_frame.configure(height=390)
 
+    def main_database():
+    # Dtabase
+    # Création de la base de donnée
+        try:
+            db = pymysql.connect(
+                host="localhost",
+                user="gestion",
+                password="motdepassefort",
+                database="users_data",
+            )
+
+            # Création d'un curseur pour executer des requetes
+            cur  = db.cursor()
+            cur.execute("SELECT * FROM users where user_email = %s ", email_entry.get())
+            row = cur.fetchone()
+
+            if row != None:
+                CTkMessagebox(title="Erreur", message=f"Cet email existe déjà", icon="cancel")
+            else:
+                cur.execute("INSERT INTO users (user_name, user_email, user_mdp) VALUES (%s, %s, %s)", (user_name_entry.get(), email_entry.get(), user_mdp_entry.get()))
+                db.commit() # Commit la base de données
+                CTkMessagebox(title="Succés", message=f"Compte créé avec succès", icon="info")
+                user_name_entry.delete(0, END)
+                email_entry.delete(0, END)
+                user_mdp_entry.delete(0, END)
+                conf_user_mdp_entry.delete(0, END)
+                login_form()
+        except Exception as es:
+            CTkMessagebox(title="Erreur", message=f"Erreur lors de la connexion à la base de données {es}", icon="cancel")
+
 
     """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
     si oui elle affiche un message d'erreur et met en surbrillance les champs vides,
@@ -254,10 +280,8 @@ def sign_up_form():
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
 
         else:
-            pass
-            # user_name_entry.delete(0, END)
-            # user_mdp_entry.delete(0, END)
-            # msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+            main_database()
+
 
     titre_label = CTkLabel(type_zone_frame,
                        text="Créer un compte",
@@ -362,7 +386,7 @@ def sign_up_form():
                             )
     conf_user_mdp_entry.place(x=34, y=y)
 
-    y += 30 + FIELD_SPACING
+    y += 40 + FIELD_SPACING
     sign_up_btn = CTkButton(type_zone_frame,
                         text="Créer un compte",
                         font=("Roboto", 15),
@@ -372,11 +396,11 @@ def sign_up_form():
                         corner_radius=5,
                         cursor="hand2",
                         command=sign_up_infos_check,
-                        width=190
+                        width=190,
                         )
     sign_up_btn.place(x=34, y=y)
 
-    y += 36 + 2
+    y += 36 + 10
     creat_new_label = CTkLabel(type_zone_frame,
                         text="Vous avez deja un compte ?",
                         text_color=s.COLORS["muted"],
@@ -402,7 +426,7 @@ def sign_up_form():
 def forgot_password_form():
     nettoyage()
 
-    type_zone_frame.configure(height=220)
+    type_zone_frame.configure(height=240)
 
     """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
     si oui elle affiche un message d'erreur et met en surbrillance les champs vides,
@@ -414,21 +438,21 @@ def forgot_password_form():
             user_name_recover_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_recover_entry.after(3000, lambda:user_name_recover_entry.configure(border_color="white"))
             msg = CTkLabel(type_zone_frame,
-                    text="Veuillez remplir tous les champs", justify="center",
+                    text="Veuillez remplir le champs", justify="center",
                     font=("Roboto", 13),
                     text_color=s.COLORS["danger_light"])
-            msg.place(x=33, y=190)
+            msg.place(relx=0.5, y=220, anchor=CENTER)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
 
         elif user_name_recover_entry.get() != "adm":
             user_name_recover_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_recover_entry.after(3000, lambda:user_name_recover_entry.configure(border_color="white"))
             msg = CTkLabel(type_zone_frame,
-                    text="Ce nom d'utilisateur n'existe pas",
+                    text="Ce email n'existe pas",
                     justify="center",
                     font=("Roboto", 13),
                     text_color=s.COLORS["danger_light"])
-            msg.place(relx=0.5, y=200, anchor=CENTER)
+            msg.place(relx=0.5, y=220, anchor=CENTER)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
         else:
             pass
@@ -445,15 +469,15 @@ def forgot_password_form():
     titre_label.place(x=32, y=12)
 
     label = CTkLabel(type_zone_frame,
-         text="Entrez votre nom d'utilisateur pour \nréinitialiser votre mot de passe",
+         text="Entrez votre email pour \nréinitialiser votre mot de passe",
             text_color=s.COLORS["muted"],
-            font=("Roboto", 10),
+            font=("Roboto", 12),
             justify="center"
             )
     label.place(relx=0.5, y=50, anchor=CENTER)
 
     user_name_recover_label = CTkLabel(type_zone_frame,
-                        text="Nom d'utilisateur",
+                        text="Email",
                         text_color=s.COLORS["muted"],
                         font=("Roboto", 10)
                         )
@@ -483,20 +507,26 @@ def forgot_password_form():
                         command=sign_up_infos_check,
                         width=190
                         )
-    submit_btn.place(relx=0.5, y=140, anchor=CENTER)
+    submit_btn.place(relx=0.5, y=145, anchor=CENTER)
 
     label_cancel = CTkButton(type_zone_frame,
                         text="Annuler",
                         font=("Roboto", 15),
-                      text_color="white",
-                        fg_color=s.COLORS["danger"],
-                        hover_color=s.COLORS["danger_hover"],
+                        text_color=s.COLORS["danger"],
+                        fg_color=s.COLORS["bg"],
+                        hover_color=s.COLORS["danger_light"],
                         corner_radius=5,
+                        border_color=s.COLORS["danger_light"],
+                        border_width=2,
                         cursor="hand2",
                         width=190,
                         command=login_form
                         )
-    label_cancel.place(relx=0.5, y=170, anchor=CENTER)
+    label_cancel.place(relx=0.5, y=185, anchor=CENTER)
+
+############################################################################
+
+
 
 
 
@@ -505,4 +535,3 @@ def forgot_password_form():
 login_form()
 # Lance l'application sur le menu principal puis démarre la boucle graphique.
 root.mainloop()
-
