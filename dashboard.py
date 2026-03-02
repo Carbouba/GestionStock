@@ -1,4 +1,4 @@
-# Importation des modules 
+# Importation des modules
 from customtkinter import *
 from CTkMessagebox import *
 from PIL import Image
@@ -13,9 +13,9 @@ root.title("Gestionnaire de stock")
 root.geometry("1800x900")
 root.resizable(0, 0)
 root.configure(fg_color=s.COLORS["bg2"])
-image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/cover.jpg"), size=(930,500))
-imagelabel = CTkLabel(root, image=image)
-imagelabel.place(x=50 , y=0)
+# image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/cover.jpg"), size=(930,500))
+# imagelabel = CTkLabel(root, image=image)
+# imagelabel.place(x=50 , y=0)
 
 # Titre pricipal
 top_frame = CTkFrame(root,
@@ -24,12 +24,12 @@ top_frame = CTkFrame(root,
                  corner_radius=25)
 top_frame.place(x=0, y= -25)
 
-titre = CTkLabel(top_frame, 
+titre = CTkLabel(top_frame,
                  text="Gestionnaire de stock",
-                 justify="center", 
+                 justify="center",
                  font=s.FONTS["h1"],
-                 text_color=s.COLORS["white"], 
-                 
+                 text_color=s.COLORS["white"],
+
                  )
 titre.place(x=50, y=75)
 
@@ -44,10 +44,10 @@ def confirm_logout():
     if response == "Oui":
         root.destroy()  # Ferme la fenêtre principale
 
-user_icon = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/round-account-button-with-user-inside_icon-icons.com_72596.png"), 
+user_icon = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/round-account-button-with-user-inside_icon-icons.com_72596.png"),
                      size=(35, 35))
-user_icon_label = CTkLabel(top_frame, 
-                           image=user_icon, 
+user_icon_label = CTkLabel(top_frame,
+                           image=user_icon,
                            text="",
                            )
 user_icon_label.place(x=1650, y=77)
@@ -67,24 +67,24 @@ disconnect = CTkButton(top_frame,
 disconnect.place(x=1500, y=77)
 
 # Frame principale
-main_frame = CTkFrame(root, 
+main_frame = CTkFrame(root,
                            fg_color=s.COLORS["white"],
                            width=1000, height=500,
                            corner_radius=10)
 main_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
 
-titre = CTkLabel(main_frame, 
+titre = CTkLabel(main_frame,
                  text="Ajouter un produit",
-                 justify="center", 
+                 justify="center",
                  font=s.FONTS["title"],
-                 text_color=s.COLORS["black"], 
-                 
+                 text_color=s.COLORS["black"],
+
                  )
 titre.place(x=30, y=35)
 
 # Champs de saisies
 # Nom du produit
-prod_name_entry = CTkEntry(main_frame, 
+prod_name_entry = CTkEntry(main_frame,
                             placeholder_text="Nom du produit",
                             text_color="black",
                             fg_color="white",
@@ -93,7 +93,7 @@ prod_name_entry = CTkEntry(main_frame,
                             width=950,
                             height=30,
                             corner_radius=5,
-                            
+
                             )
 prod_name_entry.place(relx=0.5, y=100, anchor=CENTER)
 

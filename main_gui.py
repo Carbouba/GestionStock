@@ -17,7 +17,7 @@ root.title("Se connecter")
 root.geometry("930x578")
 root.resizable(0, 0)
 root.configure(fg_color=s.COLORS["surface"])
-image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/cover.jpg"),
+image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/cover.jpg"),
                  size=(800,470))
 imagelabel = CTkLabel(root, image=image, text="")
 imagelabel.place(x=180 , y=50)
@@ -64,6 +64,28 @@ def login_form():
 
     type_zone_frame.configure(height=320)
 
+    def main_database():
+        try:
+            db = pymysql.connect(host="localhost", user="gestion", password="motdepassefort", database="users_data")
+            cur = db.cursor()
+            cur.execute("SELECT * FROM users where user_name = %s AND user_mdp = %s ", (user_name_entry.get(), user_mdp_entry.get()))
+            row = cur.fetchone()
+            if row != None:
+                root.destroy()
+                go_dashboard()
+            else:
+                msg = CTkLabel(type_zone_frame,
+                    text="Nom d'utilisateur ou \n mot de passe incorrect", justify="center",
+                    font=("Roboto", 13),
+                    text_color=s.COLORS["danger_light"])
+                msg.place(relx=0.5, y=280, anchor=CENTER)
+
+                user_name_entry.delete(0, END)
+                user_mdp_entry.delete(0, END)
+                msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+        except Exception as es:
+            CTkMessagebox(title="Erreur", message=f"Erreur lors de la connexion à la base de données {es}", icon="cancel")
+
     """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
     si oui elle affiche un message d'erreur et met en surbrillance les champs vides,
     sinon elle ajoute l'employé à la base de données et affiche un message de succès. """
@@ -81,21 +103,9 @@ def login_form():
             msg.place(relx=0.5, y=280, anchor=CENTER)
             msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
 
-
-        elif user_name_entry.get() == "adm" and user_mdp_entry.get() == "adm":
-            root.destroy()
-            go_dashboard()
-
         else:
-            msg = CTkLabel(type_zone_frame,
-                    text="Nom d'utilisateur ou \n mot de passe incorrect", justify="center",
-                    font=("Roboto", 13),
-                    text_color=s.COLORS["danger_light"])
-            msg.place(relx=0.5, y=280, anchor=CENTER)
 
-            user_name_entry.delete(0, END)
-            user_mdp_entry.delete(0, END)
-            msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+            main_database()
 
     titre_label = CTkLabel(type_zone_frame,
                        text="Se connecter",
