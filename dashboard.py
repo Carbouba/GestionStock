@@ -2,8 +2,94 @@
 from customtkinter import *
 from CTkMessagebox import *
 from PIL import Image
+import pymysql
 
 import style as s
+
+
+def get_db_connection():
+        return pymysql.connect(
+            host="localhost",
+            user="manager",
+            password="manager",
+            database="stocks_manager",
+        )
+
+def add_product():
+    nom = prod_name_entry.get().strip()
+    quantite_str = prod_quantity_entry.get().strip()
+    prix_str = prod_price_entry.get().strip()
+    categorie = prod_category_entry.get().strip()
+
+    # Verification des champs
+    if not nom or not quantite_str or not prix_str or not categorie:
+        CTkMessagebox(
+            title="Erreur",
+            message="Veuillez remplir tous les champs",
+            icon="cancel"
+            )
+        return
+
+    try:
+        quantite = int(quantite_str)
+        prix = float(prix_str)
+    except ValueError:
+        CTkMessagebox(
+            title="Erreur",
+            message="Veuillez entrer des valeurs numériques valides",
+            icon="cancel"
+            )
+        return
+
+    try:
+        # Connexion à la base de données#
+        db = get_db_connection()
+        cur = db.cursor()
+        # Création de la table si elle n'existe pas
+        #cur.execute("CREATE TABLE IF NOT EXISTS articles (nom VARCHAR(255), quantite INT, prix_unitaire DECIMAL(10,2), categorie VARCHAR(255))")
+        # Vérification si le produit existe déjà
+        cur.execute("SELECT * FROM articles WHERE nom = %s", (nom,))
+        # Récupération des résultats
+        row = cur.fetchone()
+
+        if quantite <= 0 or prix <= 0:
+            CTkMessagebox(
+                title="Erreur",
+                message="La quantité et le prix doivent être supérieurs à 0",
+                icon="cancel"
+            )
+            return
+
+        if row is not None : # None signifie que le produit n'existe pas
+            # Si le produit existe, on met à jour la quantité
+            cur.execute("UPDATE articles SET quantite = quantite + %s WHERE nom = %s", (quantite, nom))
+            # Fermeture des requetes et la base de données
+            db.commit()
+            cur.close()
+            db.close()
+            CTkMessagebox(title="Succés", message=f"Article ajouter avec succès", icon="info")
+            prod_name_entry.delete(0, END)
+            prod_quantity_entry.delete(0, END)
+            prod_price_entry.delete(0, END)
+            prod_category_entry.delete(0, END)
+        else:
+            # Si le produit n'existe pas, on l'ajoute
+            cur.execute("INSERT INTO articles (nom, quantite, prix_unitaire, categorie) VALUES (%s, %s, %s, %s)", (nom, quantite, prix, categorie))
+            # Fermeture des requetes et la base de données
+            db.commit()
+            cur.close()
+            db.close()
+            CTkMessagebox(title="Succés", message=f"Article ajouter avec succès", icon="info")
+            prod_name_entry.delete(0, END)
+            prod_quantity_entry.delete(0, END)
+            prod_price_entry.delete(0, END)
+            prod_category_entry.delete(0, END)
+    except pymysql.MySQLError as er:
+        CTkMessagebox(title="Erreur", message=f"Erreur lors de la connexion à la base de données {er}", icon="cancel")
+
+
+
+
 
 # Création de la fenêtre principale
 root = CTk()
@@ -146,9 +232,13 @@ add_button = CTkButton(main_frame,
                         width=120,
                         height=40,
                         corner_radius=5,
-                        cursor="hand2"
+                        cursor="hand2",
+                        command=add_product
                         )
 add_button.place(x=26, y=320)
 
 # Lance l'application sur le menu principal puis démarre la boucle graphique.
 root.mainloop()
+
+
+

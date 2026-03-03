@@ -237,11 +237,18 @@ def sign_up_form():
 
             # Création d'un curseur pour executer des requetes
             cur  = db.cursor()
-            cur.execute("SELECT * FROM users where user_email = %s ", email_entry.get())
-            row = cur.fetchone()
-
-            if row != None:
-                CTkMessagebox(title="Erreur", message=f"Cet email existe déjà", icon="cancel")
+            # Vérification si le nom d'utilisateur et l'email existent déjà
+            cur.execute("SELECT * FROM users where user_name = %s AND user_email = %s ", (user_name_entry.get(), email_entry.get()))
+            rows = cur.fetchall()
+            # Si le nom d'utilisateur et l'email existent déjà, afficher un message d'erreur
+            if rows != []:
+                msg = CTkLabel(type_zone_frame,
+                    text="Cet email ou nom d'utilisateur existe déjà", justify="center",
+                    font=("Roboto", 13),
+                    text_color=s.COLORS["danger_light"])
+                msg.place(relx=0.5, rely=1, y=-12, anchor=S)
+                msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+            # Sinon, ajouter le nom d'utilisateur et l'email à la base de données
             else:
                 cur.execute("INSERT INTO users (user_name, user_email, user_mdp) VALUES (%s, %s, %s)", (user_name_entry.get(), email_entry.get(), user_mdp_entry.get()))
                 db.commit() # Commit la base de données
@@ -410,7 +417,7 @@ def sign_up_form():
                         )
     sign_up_btn.place(x=34, y=y)
 
-    y += 36 + 10
+    y += 42
     creat_new_label = CTkLabel(type_zone_frame,
                         text="Vous avez deja un compte ?",
                         text_color=s.COLORS["muted"],
@@ -429,7 +436,7 @@ def sign_up_form():
                         width=50,
                         command=login_form
                         )
-    creat_new_link.place(relx=0.5, y=y+18, anchor=CENTER)
+    creat_new_link.place(relx=0.5, y=y+15, anchor=CENTER)
 
 ##################################################################################
 
@@ -535,13 +542,9 @@ def forgot_password_form():
     label_cancel.place(relx=0.5, y=185, anchor=CENTER)
 
 ############################################################################
-
-
-
-
-
-
 # Démarrage
 login_form()
 # Lance l'application sur le menu principal puis démarre la boucle graphique.
 root.mainloop()
+
+# Aucune ligne de code ne doit être ajoutée après cette ligne.
