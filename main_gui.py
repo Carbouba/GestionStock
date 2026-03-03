@@ -56,7 +56,10 @@ def nettoyage():
 def go_dashboard():
     import dashboard
 
-
+def show_error(frame, message, y):
+    msg = CTkLabel(frame, text=message, justify="center", text_color=s.COLORS["danger_light"], font=("Roboto", 13))
+    msg.place(relx=0.5, y=y, anchor=CENTER)
+    msg.after(3000, msg.destroy) # Supprimer le message après 3 secondes
 
 def login_form():
 
@@ -74,15 +77,10 @@ def login_form():
                 root.destroy()
                 go_dashboard()
             else:
-                msg = CTkLabel(type_zone_frame,
-                    text="Nom d'utilisateur ou \n mot de passe incorrect", justify="center",
-                    font=("Roboto", 13),
-                    text_color=s.COLORS["danger_light"])
-                msg.place(relx=0.5, y=280, anchor=CENTER)
+                show_error(type_zone_frame, "Nom d'utilisateur ou \n mot de passe incorrect",280)
 
                 user_name_entry.delete(0, END)
                 user_mdp_entry.delete(0, END)
-                msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
         except Exception as es:
             CTkMessagebox(title="Erreur", message=f"Erreur lors de la connexion à la base de données {es}", icon="cancel")
 
@@ -96,15 +94,10 @@ def login_form():
             user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_entry.after(3000, lambda:user_name_entry.configure(border_color="white"))
             user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame,
-                    text="Veuillez remplir tous les champs", justify="center",
-                    font=("Roboto", 13),
-                    text_color=s.COLORS["danger_light"])
-            msg.place(relx=0.5, y=280, anchor=CENTER)
-            msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+
+            show_error(type_zone_frame, "Veuillez remplir tous les champs", 280)
 
         else:
-
             main_database()
 
     titre_label = CTkLabel(type_zone_frame,
@@ -242,12 +235,7 @@ def sign_up_form():
             rows = cur.fetchall()
             # Si le nom d'utilisateur et l'email existent déjà, afficher un message d'erreur
             if rows != []:
-                msg = CTkLabel(type_zone_frame,
-                    text="Cet email ou nom d'utilisateur existe déjà", justify="center",
-                    font=("Roboto", 13),
-                    text_color=s.COLORS["danger_light"])
-                msg.place(relx=0.5, rely=1, y=-12, anchor=S)
-                msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+                show_error(type_zone_frame,"Cet email ou nom d'utilisateur \nexiste déjà", y=365)
             # Sinon, ajouter le nom d'utilisateur et l'email à la base de données
             else:
                 cur.execute("INSERT INTO users (user_name, user_email, user_mdp) VALUES (%s, %s, %s)", (user_name_entry.get(), email_entry.get(), user_mdp_entry.get()))
@@ -277,24 +265,16 @@ def sign_up_form():
             email_entry.after(3000, lambda:email_entry.configure(border_color="white"))
             user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
             conf_user_mdp_entry.after(3000, lambda:conf_user_mdp_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame,
-                    text="Veuillez remplir tous les champs", justify="center",
-                    font=("Roboto", 13),
-                    text_color=s.COLORS["danger_light"])
-            msg.place(relx=0.5, rely=1, y=-12, anchor=S)
-            msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+
+            show_error(type_zone_frame, "Veuillez remplir tous les champs", 365)
 
         elif conf_user_mdp_entry.get() != user_mdp_entry.get():
             user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
             conf_user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
             user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
             conf_user_mdp_entry.after(3000, lambda:conf_user_mdp_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame,
-                    text="Les mots de passe \nne correspondent pas", justify="center",
-                    font=("Roboto", 13),
-                    text_color=s.COLORS["danger_light"])
-            msg.place(relx=0.5, rely=1, y=-12, anchor=S)
-            msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+
+            show_error(type_zone_frame,"Les mots de passe \nne correspondent pas", 365)
 
         else:
             main_database()
@@ -454,23 +434,15 @@ def forgot_password_form():
         if user_name_recover_entry.get() == "":
             user_name_recover_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_recover_entry.after(3000, lambda:user_name_recover_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame,
-                    text="Veuillez remplir le champs", justify="center",
-                    font=("Roboto", 13),
-                    text_color=s.COLORS["danger_light"])
-            msg.place(relx=0.5, y=220, anchor=CENTER)
-            msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+
+            show_error(type_zone_frame, "Veuillez remplir tous les champs",220)
 
         elif user_name_recover_entry.get() != "adm":
             user_name_recover_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_recover_entry.after(3000, lambda:user_name_recover_entry.configure(border_color="white"))
-            msg = CTkLabel(type_zone_frame,
-                    text="Ce email n'existe pas",
-                    justify="center",
-                    font=("Roboto", 13),
-                    text_color=s.COLORS["danger_light"])
-            msg.place(relx=0.5, y=220, anchor=CENTER)
-            msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes
+
+            show_error(type_zone_frame, "Ce email n'existe pas", 220)
+
         else:
             pass
             # user_name_recover_entry.delete(0, END)
