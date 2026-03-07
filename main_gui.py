@@ -1,15 +1,34 @@
-# Importation des modules
-#from tkinter import _Anchor
-import email
+# ============================================================
+#  main_gui.py  —  Fenêtre de connexion / inscription
+# ============================================================
+
+# --- Imports ---
 from customtkinter import *
-from CTkMessagebox import *
+from CTkMessagebox import CTkMessagebox
 from PIL import Image
-import sqlite3
 import pymysql
+import os
 
 import style as s
 
-# Création de la fenêtre principale
+# ============================================================
+#  Helpers base de données
+# ============================================================
+def get_db_connection():
+    """Retourne une connexion à la base users_data.
+
+    Note: en production, ne pas laisser les identifiants en dur.
+    """
+    return pymysql.connect(
+        host="localhost",
+        user="gestion",
+        password="admine",
+        database="users_data"
+    )
+
+# ============================================================
+#  Fenêtre principale
+# ============================================================
 root = CTk()
 
 # Personnalisation de la fenêtre
@@ -48,110 +67,135 @@ type_zone_frame = CTkFrame(root,
                            corner_radius=10)
 type_zone_frame.place(x=60, y= 160)
 
-#
+# ============================================================
+#  Utilitaires UI
+# ============================================================
+
 def nettoyage():
+    """Supprime tous les widgets du panneau de formulaire."""
     for widgets in type_zone_frame.winfo_children():
         widgets.destroy()
 
 def go_dashboard():
+    # Import local volontaire: évite les imports circulaires au chargement du fichier.
+    # Ce module est importé uniquement après connexion réussie.
     import dashboard
 
+
 def show_error(frame, message, y):
-    msg = CTkLabel(frame, text=message, justify="center", text_color=s.COLORS["danger_light"], font=("Roboto", 13))
+    """Affiche un message d'erreur temporaire (3 s) dans le frame donné."""
+    msg = CTkLabel(frame,
+                   text=message,
+                   justify="center",
+                   text_color=s.COLORS["danger_light"],
+                   font=("Roboto", 13))
     msg.place(relx=0.5, y=y, anchor=CENTER)
-    msg.after(3000, msg.destroy) # Supprimer le message après 3 secondes
+    msg.after(3000, msg.destroy)
+
+
+def highlight_error(*entries, delay=3000):
+    """Met les champs en rouge, puis les remet en blanc après `delay` ms."""
+    for entry in entries:
+        entry.configure(border_color=s.COLORS["danger_light"])
+        entry.after(delay, lambda e=entry: e.configure(border_color="white"))
+
+# ============================================================
+#  Formulaire de connexion
+# ============================================================
 
 def login_form():
-
+    """Construit et affiche le formulaire de connexion."""
     nettoyage()
-
     type_zone_frame.configure(height=320)
 
+    # ── Connexion BDD ──────────────────────────────────────
     def main_database():
+        # Vérifie les identifiants en base puis redirige vers le dashboard.
         try:
-            db = pymysql.connect(host="localhost", user="gestion", password="motdepassefort", database="users_data")
+            db = get_db_connection()
             cur = db.cursor()
-            cur.execute("SELECT * FROM users where user_name = %s AND user_mdp = %s ", (user_name_entry.get(), user_mdp_entry.get()))
+            cur.execute(
+                "SELECT * FROM users WHERE user_name = %s AND user_mdp = %s",
+                (user_name_entry.get(), user_mdp_entry.get())
+            )
             row = cur.fetchone()
-            if row != None:
+            cur.close()
+            db.close()
+
+            if row is not None:
                 root.destroy()
                 go_dashboard()
             else:
-                show_error(type_zone_frame, "Nom d'utilisateur ou \n mot de passe incorrect",280)
-
+                show_error(type_zone_frame, "Nom d'utilisateur ou\nmot de passe incorrect", 280)
                 user_name_entry.delete(0, END)
                 user_mdp_entry.delete(0, END)
-        except Exception as es:
-            CTkMessagebox(title="Erreur", message=f"Erreur lors de la connexion à la base de données {es}", icon="cancel")
 
-    """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
-    si oui elle affiche un message d'erreur et met en surbrillance les champs vides,
-    sinon elle ajoute l'employé à la base de données et affiche un message de succès. """
+        except pymysql.MySQLError as e:
+            CTkMessagebox(title="Erreur",
+                          message=f"Erreur de connexion à la base de données :\n{e}",
+                          icon="cancel")
 
+    # ── Validation formulaire ──────────────────────────────
     def login_infos_check():
-        if user_name_entry.get() == "" or user_mdp_entry.get() == "":
-            user_name_entry.configure(border_color=s.COLORS["danger_light"])
-            user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
-            user_name_entry.after(3000, lambda:user_name_entry.configure(border_color="white"))
-            user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
-
+        # Évite un aller-retour DB si les champs sont déjà vides.
+        if not user_name_entry.get() or not user_mdp_entry.get():
+            highlight_error(user_name_entry, user_mdp_entry)
             show_error(type_zone_frame, "Veuillez remplir tous les champs", 280)
-
         else:
             main_database()
 
+    # ── Widgets ────────────────────────────────────────────
     titre_label = CTkLabel(type_zone_frame,
-                       text="Se connecter",
-                       text_color=s.COLORS["primary"],
-                       font=("Helvetica", 18, "bold"),
-
-                       )
+        text="Se connecter",
+        text_color=s.COLORS["primary"],
+        font=("Helvetica", 18, "bold"),
+    )
     titre_label.place(x=32, y=12)
 
     sub_new_label = CTkLabel(type_zone_frame,
-                        text="Saisissez les identifiants de votre compte",
-                        text_color=s.COLORS["muted"],
-                        font=("Roboto", 10)
-                        )
+        text="Saisissez les identifiants de votre compte",
+        text_color=s.COLORS["muted"],
+        font=("Roboto", 10)
+    )
     sub_new_label.place(x=32, y=30)
 
     username_plas_label = CTkLabel(type_zone_frame,
-                        text="Email ou nom d'utilisateur",
-                        text_color=s.COLORS["muted"],
-                        font=("Roboto", 10)
-                        )
+        text="Nom d'utilisateur",
+        text_color=s.COLORS["muted"],
+        font=("Roboto", 10)
+    )
     username_plas_label.place(x=34, y=53)
 
     user_name_entry = CTkEntry(type_zone_frame,
-                            placeholder_text="",
-                            text_color="black",
-                            fg_color="white",
-                            border_width=2,
-                            border_color=s.COLORS["bg"],
-                            width=190,
-                            height=30,
-                            corner_radius=5
-                            )
+        placeholder_text="",
+        text_color="black",
+        fg_color="white",
+        border_width=2,
+        border_color=s.COLORS["bg"],
+        width=190,
+        height=30,
+        corner_radius=5
+    )
     user_name_entry.place(x=32, y=75)
 
     mdp_plas_label = CTkLabel(type_zone_frame,
-                        text="Mot de passe",
-                        text_color=s.COLORS["muted"],
-                        font=("Roboto", 10)
-                        )
+        text="Mot de passe",
+        text_color=s.COLORS["muted"],
+        font=("Roboto", 10)
+    )
     mdp_plas_label.place(x=34, y=105)
 
     user_mdp_entry = CTkEntry(type_zone_frame,
-                            placeholder_text="",
-                            text_color="black",
-                            fg_color="white",
-                            border_width=2,
-                            border_color=s.COLORS["bg"],
-                            width=190,
-                            height=30,
-                            corner_radius=5,
-                            show="*"
-                            )
+        placeholder_text="",
+        text_color="black",
+        fg_color="white",
+        border_width=2,
+        border_color=s.COLORS["bg"],
+        width=190,
+        height=30,
+        corner_radius=5,
+        show="*"
+    )
     user_mdp_entry.place(x=32, y=125)
 
     forgot_mdp_link = CTkButton(
@@ -169,25 +213,18 @@ def login_form():
     )
     forgot_mdp_link.place(x=123, y=155)
 
-
-
     login_btn = CTkButton(type_zone_frame,
-                        text="Se connecter",
-                        font=("Roboto", 15),
-                        text_color="white",
-                        fg_color=s.COLORS["success"],
-                        hover_color=s.COLORS["success_hover"],
-                        corner_radius=5,
-                        cursor="hand2",
-                        command=login_infos_check,
-                        width=190
-                        )
+        text="Se connecter",
+        font=("Roboto", 15),
+        text_color="white",
+        fg_color=s.COLORS["success"],
+        hover_color=s.COLORS["success_hover"],
+        corner_radius=5,
+        cursor="hand2",
+        command=login_infos_check,
+        width=190
+    )
     login_btn.place(x=32, y=185)
-
-    # check_box = CTkCheckBox(type_zone_frame,
-    #                         text="Afficher le mot de passe",
-    #                         command=lambda: toggle_password_visibility(user_mdp_entry.get()))
-    # check_box.place(x=32, y=215)
 
     creat_new_label = CTkLabel(type_zone_frame,
                         text="Vous n'avez pas encore de compte ?",
@@ -211,75 +248,93 @@ def login_form():
 
 #######################################################################################
 
+# ============================================================
+#  Formulaire d'inscription
+# ============================================================
+
 def sign_up_form():
-
+    """Construit et affiche le formulaire de création de compte."""
     nettoyage()
-
     type_zone_frame.configure(height=390)
 
+    # ── Connexion BDD ──────────────────────────────────────
     def main_database():
-    # Dtabase
-    # Création de la base de donnée
+        name  = user_name_entry.get().strip()
+        mail  = email_entry.get().strip()
+        mdp   = user_mdp_entry.get()
+
         try:
-            db = pymysql.connect(
-                host="localhost",
-                user="gestion",
-                password="motdepassefort",
-                database="users_data",
+            db  = get_db_connection()
+            cur = db.cursor()
+
+            # Contrôle d'unicité: on bloque si le nom utilisateur OU l'email existe déjà.
+            cur.execute(
+                "SELECT 1 FROM users WHERE user_name = %s OR user_email = %s",
+                (name, mail)
             )
-
-            # Création d'un curseur pour executer des requetes
-            cur  = db.cursor()
-            # Vérification si le nom d'utilisateur et l'email existent déjà
-            cur.execute("SELECT * FROM users where user_name = %s AND user_email = %s ", (user_name_entry.get(), email_entry.get()))
             rows = cur.fetchall()
-            # Si le nom d'utilisateur et l'email existent déjà, afficher un message d'erreur
-            if rows != []:
-                show_error(type_zone_frame,"Cet email ou nom d'utilisateur \nexiste déjà", y=365)
-            # Sinon, ajouter le nom d'utilisateur et l'email à la base de données
+
+            if rows:
+                show_error(type_zone_frame,
+                           "Cet email ou nom d'utilisateur\nexiste déjà", y=365)
             else:
-                cur.execute("INSERT INTO users (user_name, user_email, user_mdp) VALUES (%s, %s, %s)", (user_name_entry.get(), email_entry.get(), user_mdp_entry.get()))
-                db.commit() # Commit la base de données
-                CTkMessagebox(title="Succés", message=f"Compte créé avec succès", icon="info")
-                user_name_entry.delete(0, END)
-                email_entry.delete(0, END)
-                user_mdp_entry.delete(0, END)
-                conf_user_mdp_entry.delete(0, END)
+                cur.execute(
+                    "INSERT INTO users (user_name, user_email, user_mdp) VALUES (%s, %s, %s)",
+                    (name, mail, mdp)
+                )
+                db.commit()
+                CTkMessagebox(title="Succès",
+                              message="Compte créé avec succès. Connectez-vous.",
+                              icon="info")
+                # Nettoyage du formulaire après succès pour repartir sur un état propre.
+                for entry in (user_name_entry, email_entry,
+                              user_mdp_entry, conf_user_mdp_entry):
+                    entry.delete(0, END)
                 login_form()
-        except Exception as es:
-            CTkMessagebox(title="Erreur", message=f"Erreur lors de la connexion à la base de données {es}", icon="cancel")
 
+            cur.close()
+            db.close()
 
-    """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
-    si oui elle affiche un message d'erreur et met en surbrillance les champs vides,
-    sinon elle ajoute l'employé à la base de données et affiche un message de succès. """
+        except pymysql.MySQLError as e:
+            CTkMessagebox(title="Erreur",
+                          message=f"Erreur de connexion à la base de données :\n{e}",
+                          icon="cancel")
 
-
+    # ── Validation formulaire ──────────────────────────────
     def sign_up_infos_check():
-        if user_name_entry.get() == "" or email_entry.get() == "" or user_mdp_entry.get() == "" or conf_user_mdp_entry.get() == "":
-            user_name_entry.configure(border_color=s.COLORS["danger_light"])
-            email_entry.configure(border_color=s.COLORS["danger_light"])
-            user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
-            conf_user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
-            user_name_entry.after(3000, lambda:user_name_entry.configure(border_color="white"))
-            email_entry.after(3000, lambda:email_entry.configure(border_color="white"))
-            user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
-            conf_user_mdp_entry.after(3000, lambda:conf_user_mdp_entry.configure(border_color="white"))
+        # Chaîne de validations: on s'arrête au premier problème rencontré.
+        name  = user_name_entry.get()
+        mail  = email_entry.get()
+        mdp   = user_mdp_entry.get()
+        cmdp  = conf_user_mdp_entry.get()
 
+        if not name or not mail or not mdp or not cmdp:
+            highlight_error(user_name_entry, email_entry,
+                            user_mdp_entry, conf_user_mdp_entry)
             show_error(type_zone_frame, "Veuillez remplir tous les champs", 365)
 
-        elif conf_user_mdp_entry.get() != user_mdp_entry.get():
-            user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
-            conf_user_mdp_entry.configure(border_color=s.COLORS["danger_light"])
-            user_mdp_entry.after(3000, lambda:user_mdp_entry.configure(border_color="white"))
-            conf_user_mdp_entry.after(3000, lambda:conf_user_mdp_entry.configure(border_color="white"))
+        elif "@" not in mail or "." not in mail.split("@")[-1]:
+            # Validation email générique (pas seulement @gmail.com)
+            highlight_error(email_entry)
+            show_error(type_zone_frame, "Adresse email invalide. \nex: votrenom@gmail.com", 365)
 
-            show_error(type_zone_frame,"Les mots de passe \nne correspondent pas", 365)
+        elif mdp != cmdp:
+            highlight_error(user_mdp_entry, conf_user_mdp_entry)
+            show_error(type_zone_frame, "Les mots de passe\nne correspondent pas", 365)
+
+        elif " " in mdp:
+            show_error(type_zone_frame,
+                       "Les espaces ne sont pas autorisés\ndans le mot de passe.", 365)
+
+        elif len(mdp) < 6:
+            highlight_error(user_mdp_entry, conf_user_mdp_entry)
+            show_error(type_zone_frame,
+                       "Le mot de passe doit contenir\nau moins 6 caractères.", 365)
 
         else:
             main_database()
 
-
+    # ── Widgets ────────────────────────────────────────────
     titre_label = CTkLabel(type_zone_frame,
                        text="Créer un compte",
                        text_color=s.COLORS["primary"],
@@ -297,8 +352,7 @@ def sign_up_form():
     sub_new_label.place(x=32, y=35)
 
     # Grille : LABEL_ENTRY_GAP=20px (placeholder→entry), FIELD_SPACING=14px (entre couples)
-    Y_START = 70
-    LABEL_ENTRY_GAP = 20
+    Y_START, LABEL_ENTRY_GAP = 70, 20
     FIELD_SPACING = 0
 
     y = Y_START
@@ -420,17 +474,18 @@ def sign_up_form():
 
 ##################################################################################
 
+# ============================================================
+#  Formulaire mot de passe oublié
+# ============================================================
+
 def forgot_password_form():
+    """Construit le formulaire de récupération mot de passe (version UI simple)."""
     nettoyage()
 
     type_zone_frame.configure(height=240)
 
-    """ Fonction qui verifie si les champs du formulaire sont vides ou pas,
-    si oui elle affiche un message d'erreur et met en surbrillance les champs vides,
-    sinon elle ajoute l'employé à la base de données et affiche un message de succès. """
-
-
     def sign_up_infos_check():
+        # TODO: remplacer ce contrôle local par une vraie vérification en base + envoi mail.
         if user_name_recover_entry.get() == "":
             user_name_recover_entry.configure(border_color=s.COLORS["danger_light"])
             user_name_recover_entry.after(3000, lambda:user_name_recover_entry.configure(border_color="white"))
@@ -444,6 +499,7 @@ def forgot_password_form():
             show_error(type_zone_frame, "Ce email n'existe pas", 220)
 
         else:
+            # Emplacement prévu pour l'action réelle de récupération.
             pass
             # user_name_recover_entry.delete(0, END)
             # msg.after(3000, lambda: msg.destroy()) # Supprimer le message après 3 secondes

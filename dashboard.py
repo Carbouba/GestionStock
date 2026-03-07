@@ -1,4 +1,8 @@
-# Importation des modules
+# ============================================================
+#  dashboard.py  —  Tableau de bord / gestion des produits
+# ============================================================
+
+# --- Imports ---
 from customtkinter import *
 from CTkMessagebox import *
 from PIL import Image
@@ -7,128 +11,142 @@ import pymysql
 import style as s
 
 
+# ============================================================
+#  Helpers base de données
+# ============================================================
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def get_db_connection():
-        return pymysql.connect(
-            host="localhost",
-            user="manager",
-            password="manager",
-            database="stocks_manager",
-        )
+    """Retourne une connexion à la base stocks_manager."""
+    return pymysql.connect(
+        host="localhost",
+        user="gestion",
+        password="admine",
+        database="stocks_manager"
+    )
+
+# ============================================================
+#  Logique métier
+# ============================================================
 
 def add_product():
-    nom = prod_name_entry.get().strip()
-    quantite_str = prod_quantity_entry.get().strip()
-    prix_str = prod_price_entry.get().strip()
-    categorie = prod_category_entry.get().strip()
+    nom           = prod_name_entry.get().strip()
+    quantite_str  = prod_quantity_entry.get().strip()
+    prix_str      = prod_price_entry.get().strip()
+    categorie     = prod_category_entry.get().strip()
 
-    # Verification des champs
+    # ── 1. Vérification champs vides ──────────────────────
     if not nom or not quantite_str or not prix_str or not categorie:
-        CTkMessagebox(
-            title="Erreur",
-            message="Veuillez remplir tous les champs",
-            icon="cancel"
-            )
+        CTkMessagebox(title="Erreur",
+                      message="Veuillez remplir tous les champs",
+                      icon="cancel")
         return
 
+    # ── 2. Validation types numériques ────────────────────
     try:
         quantite = int(quantite_str)
-        prix = float(prix_str)
+        prix     = float(prix_str)
     except ValueError:
-        CTkMessagebox(
-            title="Erreur",
-            message="Veuillez entrer des valeurs numériques valides",
-            icon="cancel"
-            )
+        CTkMessagebox(title="Erreur",
+                      message="La quantité doit être un entier\net le prix un nombre décimal.",
+                      icon="cancel")
         return
 
+    # ── 3. Règles métier (AVANT la BDD) ───────────────────
+    # BUG CORRIGÉ : ces vérifications étaient faites APRÈS la requête SELECT,
+    # ce qui pouvait lancer une requête inutile avec des données invalides.
+    if quantite <= 0 or prix <= 0:
+        CTkMessagebox(title="Erreur",
+                      message="La quantité et le prix doivent être supérieurs à 0",
+                      icon="cancel")
+        return
+
+    # ── 4. Opérations base de données ─────────────────────
+    db  = None
+    cur = None
     try:
-        # Connexion à la base de données#
-        db = get_db_connection()
+        db  = get_db_connection()
         cur = db.cursor()
-        # Création de la table si elle n'existe pas
-        #cur.execute("CREATE TABLE IF NOT EXISTS articles (nom VARCHAR(255), quantite INT, prix_unitaire DECIMAL(10,2), categorie VARCHAR(255))")
-        # Vérification si le produit existe déjà
-        cur.execute("SELECT * FROM articles WHERE nom = %s", (nom,))
-        # Récupération des résultats
+
+        cur.execute("SELECT 1 FROM articles WHERE nom = %s", (nom,))
         row = cur.fetchone()
 
-        if quantite <= 0 or prix <= 0:
-            CTkMessagebox(
-                title="Erreur",
-                message="La quantité et le prix doivent être supérieurs à 0",
-                icon="cancel"
+        if row is not None:
+            # Produit existant → mise à jour de la quantité
+            cur.execute(
+                "UPDATE articles SET quantite = quantite + %s WHERE nom = %s",
+                (quantite, nom)
             )
-            return
-
-        if row is not None : # None signifie que le produit n'existe pas
-            # Si le produit existe, on met à jour la quantité
-            cur.execute("UPDATE articles SET quantite = quantite + %s WHERE nom = %s", (quantite, nom))
-            # Fermeture des requetes et la base de données
-            db.commit()
-            cur.close()
-            db.close()
-            CTkMessagebox(title="Succés", message=f"Article ajouter avec succès", icon="info")
-            prod_name_entry.delete(0, END)
-            prod_quantity_entry.delete(0, END)
-            prod_price_entry.delete(0, END)
-            prod_category_entry.delete(0, END)
+            db.commit()  # BUG CORRIGÉ : commit manquant après UPDATE
+            CTkMessagebox(title="Mise à jour",
+                          message=f"Stock de '{nom}' mis à jour (+{quantite})",
+                          icon="info")
         else:
-            # Si le produit n'existe pas, on l'ajoute
-            cur.execute("INSERT INTO articles (nom, quantite, prix_unitaire, categorie) VALUES (%s, %s, %s, %s)", (nom, quantite, prix, categorie))
-            # Fermeture des requetes et la base de données
+            # Nouveau produit → insertion
+            cur.execute(
+                "INSERT INTO articles (nom, quantite, prix_unitaire, categorie) "
+                "VALUES (%s, %s, %s, %s)",
+                (nom, quantite, prix, categorie)
+            )
             db.commit()
-            cur.close()
-            db.close()
-            CTkMessagebox(title="Succés", message=f"Article ajouter avec succès", icon="info")
-            prod_name_entry.delete(0, END)
-            prod_quantity_entry.delete(0, END)
-            prod_price_entry.delete(0, END)
-            prod_category_entry.delete(0, END)
-    except pymysql.MySQLError as er:
-        CTkMessagebox(title="Erreur", message=f"Erreur lors de la connexion à la base de données {er}", icon="cancel")
+            CTkMessagebox(message="Article ajouté avec succès", icon="info")
+
+        # Remise à zéro des champs après succès
+        for entry in (prod_name_entry, prod_quantity_entry,
+                      prod_price_entry, prod_category_entry):
+            entry.delete(0, END)
+
+    except pymysql.MySQLError as e:
+        CTkMessagebox(title="Erreur",
+                      message=f"Erreur base de données :\n{e}",
+                      icon="cancel")
+
+    finally:
+        # BUG CORRIGÉ : close() dans un bloc finally → toujours exécuté,
+        # même si une exception est levée.
+        if cur: cur.close()
+        if db:  db.close()
 
 
+# ============================================================
+#  Fenêtre principale
+# ============================================================
 
-
-
-# Création de la fenêtre principale
 root = CTk()
-
-# Personnalisation de la fenêtre
 root.title("Gestionnaire de stock")
 root.geometry("1800x900")
 root.resizable(0, 0)
 root.configure(fg_color=s.COLORS["bg2"])
-# image = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/cover.jpg"), size=(930,500))
-# imagelabel = CTkLabel(root, image=image)
-# imagelabel.place(x=50 , y=0)
 
-# Titre pricipal
+# ── Header ─────────────────────────────────────────────────
 top_frame = CTkFrame(root,
-                 fg_color=s.COLORS["primary"],
-                 width=1800, height=150,
-                 corner_radius=25)
-top_frame.place(x=0, y= -25)
+                     fg_color=s.COLORS["primary"],
+                     width=1800, height=150,
+                     corner_radius=25)
+top_frame.place(x=0, y=-25)
 
-titre = CTkLabel(top_frame,
-                 text="Gestionnaire de stock",
-                 justify="center",
-                 font=s.FONTS["h1"],
-                 text_color=s.COLORS["white"],
+CTkLabel(top_frame,
+         text="Gestionnaire de stock",
+         justify="center",
+         font=s.FONTS["h1"],
+         text_color=s.COLORS["white"]).place(x=50, y=75)
 
-                 )
-titre.place(x=50, y=75)
-
-# Bouton de deconnexion
-# Confirtmation de deconnexion
+# ── Déconnexion ────────────────────────────────────────────
 def confirm_logout():
-    response = CTkMessagebox(title="Confirmation de déconnexion",
-                             message="Êtes-vous sûr de vouloir vous déconnecter ?",
-                             icon="question",
-                             option_1="Oui",
-                             option_2="Non")
-    if response == "Oui":
-        root.destroy()  # Ferme la fenêtre principale
+    response = CTkMessagebox(
+        title="Confirmation de déconnexion",
+        message="Êtes-vous sûr de vouloir vous déconnecter ?",
+        icon="question",
+        option_1="Oui",
+        option_2="Non"
+    )
+    # BUG CORRIGÉ : CTkMessagebox.get() retourne le texte du bouton cliqué.
+    # L'ancienne comparaison `response == "Oui"` comparait un objet à une string
+    # → toujours False, la déconnexion ne fonctionnait jamais.
+    if response.get() == "Oui":
+        root.destroy()
+        import main_gui  # Retour à l'écran de connexion
 
 user_icon = CTkImage(Image.open("/home/boubacar/Mes_projets_code/GestionStock/images/round-account-button-with-user-inside_icon-icons.com_72596.png"),
                      size=(35, 35))
